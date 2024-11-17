@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+<<<<<<< HEAD
     "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.6",
@@ -22,6 +23,13 @@
     "react-dom": "^18.2.0",
     "react-paginate": "^8.2.0",
     "react-select": "^5.8.3"
+=======
+    "mini-css-extract-plugin": "^2.9.1",
+    "axios": "^0.21.1",
+    "next": "15.0.2",
+    "react": "19.0.0-rc-02c0e824-20241028",
+    "react-dom": "19.0.0-rc-02c0e824-20241028"
+>>>>>>> fcf9aa17a154f72265472b74da8da620bf9c1c39
   },
   "devDependencies": {
     "@types/node": "^20",

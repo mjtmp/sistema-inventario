@@ -1,13 +1,18 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Float, Boolean, Date
 from sqlalchemy.orm import relationship
+<<<<<<< HEAD
 from database import Base
 import datetime
+=======
+from backend.database import Base  # Mantén esta importación
+>>>>>>> fcf9aa17a154f72265472b74da8da620bf9c1c39
 
 class Rol(Base):
     __tablename__ = "Roles"
 
     rol_id = Column(Integer, primary_key=True, index=True)
     nombre = Column(String, unique=True, index=True)
+<<<<<<< HEAD
     
     usuarios = relationship("Usuario", back_populates="rol")  # Relación inversa
     permisos = relationship("Permiso", secondary="Roles_Permisos", back_populates="roles")
@@ -25,6 +30,8 @@ class RolesPermisos(Base):
 
     rol_id = Column(Integer, ForeignKey("Roles.rol_id"), primary_key=True)
     permiso_id = Column(Integer, ForeignKey("Permisos.permiso_id"), primary_key=True)
+=======
+>>>>>>> fcf9aa17a154f72265472b74da8da620bf9c1c39
 
 class Usuario(Base):
     __tablename__ = "Usuarios"
@@ -34,6 +41,7 @@ class Usuario(Base):
     email = Column(String, unique=True, index=True)
     contraseña = Column(String)
     rol_id = Column(Integer, ForeignKey("Roles.rol_id"))
+<<<<<<< HEAD
     
     # Campos de auditoría
     fecha_creacion = Column(Date, default=datetime.date.today)
@@ -54,11 +62,17 @@ class Usuario(Base):
             "fecha_actualizacion": self.fecha_actualizacion.isoformat() if self.fecha_actualizacion else None, # Formato ISO para fecha
         }
     
+=======
+
+    rol = relationship("Rol")
+
+>>>>>>> fcf9aa17a154f72265472b74da8da620bf9c1c39
 class Producto(Base):
     __tablename__ = "Productos"
 
     producto_id = Column(Integer, primary_key=True, index=True)
     nombre = Column(String, index=True)
+<<<<<<< HEAD
     descripcion = Column(String)
     precio = Column(Float)
     tiene_iva = Column(Boolean)
@@ -95,6 +109,15 @@ class Producto(Base):
             "fecha_creacion": self.fecha_creacion.isoformat() if self.fecha_creacion else None,  # Formato ISO para fecha
             "fecha_actualizacion": self.fecha_actualizacion.isoformat() if self.fecha_actualizacion else None, # Formato ISO para fecha
         }
+=======
+    descripcion = Column(String)  # Nuevo campo 'descripcion'
+    precio = Column(Float)
+    tiene_iva = Column(Boolean)
+    stock = Column(Integer)
+    proveedor_id = Column(Integer, ForeignKey("Proveedores.proveedor_id"))  # Clave foránea a 'proveedores'
+
+    proveedor = relationship("Proveedor", back_populates="productos")
+>>>>>>> fcf9aa17a154f72265472b74da8da620bf9c1c39
 
 class Proveedor(Base):
     __tablename__ = "Proveedores"
@@ -104,6 +127,7 @@ class Proveedor(Base):
     email = Column(String, index=True)
     telefono = Column(String, index=True)
     direccion = Column(String, index=True)
+<<<<<<< HEAD
 
     # Relación con EntradasInventario
     entradas_inventario = relationship("EntradaInventario", back_populates="proveedor")
@@ -123,6 +147,10 @@ class Proveedor(Base):
             "fecha_creacion": self.fecha_creacion.isoformat() if self.fecha_creacion else None,  # Formato ISO para fecha
             "fecha_actualizacion": self.fecha_actualizacion.isoformat() if self.fecha_actualizacion else None, # Formato ISO para fecha
         }
+=======
+    
+    productos = relationship("Producto", back_populates="proveedor")  # Relación inversa
+>>>>>>> fcf9aa17a154f72265472b74da8da620bf9c1c39
 
 class Cliente(Base):
     __tablename__ = "Clientes"
@@ -133,6 +161,7 @@ class Cliente(Base):
     telefono = Column(String)
     direccion = Column(String)
     
+<<<<<<< HEAD
     fecha_creacion = Column(Date, default=datetime.date.today)
     fecha_actualizacion = Column(Date, default=datetime.date.today)
     
@@ -213,10 +242,16 @@ class FacturaProducto(Base):
     def monto_total(self): return self.cantidad * self.precio_unitario
      
 # En la clase Pedido, añades la relación inversa para la factura
+=======
+    # Relación con pedidos
+    pedidos = relationship("Pedido", back_populates="cliente")
+
+>>>>>>> fcf9aa17a154f72265472b74da8da620bf9c1c39
 class Pedido(Base):
     __tablename__ = "Pedidos"
 
     pedido_id = Column(Integer, primary_key=True, index=True)
+<<<<<<< HEAD
     cliente_id = Column(Integer, ForeignKey("Clientes.cliente_id"), nullable=False)
     fecha_pedido = Column(Date, default=datetime.date.today)
     estado = Column(String, default='pendiente')
@@ -238,6 +273,14 @@ class Pedido(Base):
             "estado": self.estado,
         }
 
+=======
+    cliente_id = Column(Integer, ForeignKey("Clientes.cliente_id"))
+    fecha = Column(Date)
+    total = Column(Float)
+
+    cliente = relationship("Cliente", back_populates="pedidos")
+    detalles = relationship("DetallePedido", back_populates="pedido")
+>>>>>>> fcf9aa17a154f72265472b74da8da620bf9c1c39
 
 class DetallePedido(Base):
     __tablename__ = "DetallePedidos"
@@ -269,6 +312,7 @@ class ReportesInventario(Base):
     producto_id = Column(Integer, ForeignKey("Productos.producto_id"))
     stock = Column(Integer, nullable=False)
 
+<<<<<<< HEAD
     producto = relationship("Producto", back_populates="reportes_inventario")
     
 class EntradaInventario(Base):
@@ -301,4 +345,7 @@ class SalidasInventario(Base):
     factura = relationship("Factura", back_populates="salidas")
 
 
+=======
+    producto = relationship("Producto")
+>>>>>>> fcf9aa17a154f72265472b74da8da620bf9c1c39
 

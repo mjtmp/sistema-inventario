@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from fastapi import APIRouter, Depends, HTTPException  # Para manejar rutas, dependencias y excepciones.
 from sqlalchemy.orm import Session  # Manejo de sesiones de la base de datos.
 from models.models import Producto  # Modelo de SQLAlchemy.
@@ -72,6 +73,13 @@ from crud.productos import get_producto, get_productos, create_producto, update_
 from schemas.productos import Producto, ProductoCreate, ProductoUpdate
 from database import SessionLocal
 from typing import List
+=======
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from ..crud.productos import get_producto, get_productos, create_producto, update_producto, delete_producto
+from ..schemas.productos import Producto, ProductoCreate, ProductoUpdate
+from backend.database import SessionLocal
+>>>>>>> fcf9aa17a154f72265472b74da8da620bf9c1c39
 
 router = APIRouter()
 
@@ -87,10 +95,16 @@ def get_db():
 def crear_producto(producto: ProductoCreate, db: Session = Depends(get_db)):
     return create_producto(db=db, producto=producto)
 
+<<<<<<< HEAD
 @router.get("/", response_model=dict)
 def listar_productos(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     productos, total = get_productos(db=db, skip=skip, limit=limit)
     return {"productos": [Producto(**producto.to_dict()) for producto in productos], "total": total}
+=======
+@router.get("/", response_model=list[Producto])
+def listar_productos(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    return get_productos(db=db, skip=skip, limit=limit)
+>>>>>>> fcf9aa17a154f72265472b74da8da620bf9c1c39
 
 @router.get("/{producto_id}", response_model=Producto)
 def obtener_producto(producto_id: int, db: Session = Depends(get_db)):
@@ -112,4 +126,7 @@ def eliminar_producto(producto_id: int, db: Session = Depends(get_db)):
     if db_producto is None:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
     return db_producto
+<<<<<<< HEAD
 '''
+=======
+>>>>>>> fcf9aa17a154f72265472b74da8da620bf9c1c39

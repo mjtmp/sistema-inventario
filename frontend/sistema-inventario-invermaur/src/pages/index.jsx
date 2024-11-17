@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // src/pages/index.jsx
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
@@ -31,6 +32,9 @@ export default Index;
 
 
 /*import 'bootstrap/dist/css/bootstrap.min.css';
+=======
+import 'bootstrap/dist/css/bootstrap.min.css';
+>>>>>>> fcf9aa17a154f72265472b74da8da620bf9c1c39
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 
@@ -51,4 +55,8 @@ export default function Home() {
       <p>Esta es la página principal de tu aplicación de inventario.</p>
     </div>
   );
+<<<<<<< HEAD
 }*/
+=======
+}
+>>>>>>> fcf9aa17a154f72265472b74da8da620bf9c1c39

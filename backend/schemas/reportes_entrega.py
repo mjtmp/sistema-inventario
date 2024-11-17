@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from pydantic import BaseModel  # Base para los esquemas de validación
 from datetime import date  # Manejo de fechas
 from typing import Optional  # Soporte para campos opcionales
@@ -24,3 +25,26 @@ class ReporteEntrega(ReporteEntregaBase):
     class Config:
         from_attributes = True  # Permite convertir desde objetos SQLAlchemy
 
+=======
+from pydantic import BaseModel
+from datetime import date
+from typing import Optional
+
+class ReporteEntregaBase(BaseModel):
+    pedido_id: int
+    fecha_entrega: date
+    estado: str
+
+class ReporteEntregaCreate(ReporteEntregaBase):
+    pass
+
+class ReporteEntregaUpdate(BaseModel):
+    fecha_entrega: Optional[date]
+    estado: Optional[str]
+
+class ReporteEntrega(ReporteEntregaBase):
+    entrega_id: int
+
+    class Config:
+        from_attributes = True
+>>>>>>> fcf9aa17a154f72265472b74da8da620bf9c1c39
