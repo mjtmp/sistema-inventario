@@ -1,0 +1,114 @@
+/* Contenedor principal para ocupar toda la pantalla */
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Contenido principal donde se ubicarán las entradas */
+.mainContent {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding-left: 250px; /* Espacio para el sidebar */
+}
+
+/* Título de la página */
+.title {
+    text-align: center;
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 1rem;
+    font-weight: bold;
+}
+
+/* Tabla de entradas */
+.table {
+    margin: 1rem 25px; /* Margen a los lados */
+    width: calc(100% - 50px);
+    border-collapse: collapse;
+    border: 1px solid #dee2e6;
+}
+
+.table th,
+.table td {
+    text-align: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    color: #0056b3;
+}
+
+.table td {
+    background-color: #ffffff;
+    color: #333;
+}
+
+.table tr:nth-child(even) {
+    background-color: #f2f2f2; /* Para filas alternadas */
+}
+
+/* Botones de acción (editar/eliminar) */
+.btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border-radius: 4px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+    margin-right: 10px;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+/* Ajuste de la tabla y contenedor de paginación */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+    padding-bottom: 1rem;
+}
+
+.pagination .page-item .page-link {
+    color: #007bff;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+}
+
+.pagination .page-item .page-link:hover {
+    background-color: #0056b3;
+    color: #fff;
+}
+
+.pagination .active {
+    background-color: #0056b3;
+    font-weight: bold;
+}
+
+/* Adaptación para dispositivos móviles */
+@media (max-width: 768px) {
+    .mainContent {
+        padding-left: 0;
+        padding-right: 1rem;
+    }
+
+    .table {
+        width: 100%;
+        margin: 1rem 0;
+    }
+
+    .title {
+        font-size: 1.8rem;
+    }
+}

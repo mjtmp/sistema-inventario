@@ -1,0 +1,145 @@
+/* Contenedor principal que debe ocupar toda la altura de la pantalla */
+.container {
+    min-height: 100vh;  /* Asegura que la página ocupe todo el alto de la ventana */
+    display: flex;
+    flex-direction: column;  /* Coloca los elementos dentro de .container en una columna */
+}
+
+/* Contenido principal que ocupa el espacio restante */
+.mainContent {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;  /* Hace que este contenedor crezca y ocupe el espacio restante */
+    padding-left: 250px;  /* Ajusta según el ancho del Sidebar */
+    padding-right: 20px; /* Añade un pequeño margen a la derecha */
+    background-color: #f9f9f9; /* Color de fondo para el contenido */
+}
+
+/* Estilos del título */
+.title {
+    text-align: center;
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+/* Filtros de búsqueda y rango de fechas */
+.filters {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding: 0 20px;
+}
+
+.filters input,
+.filters select,
+.filters button {
+    margin-right: 10px;
+    height: 40px;
+}
+
+.filters select {
+    width: 250px; /* Ancho del selector de productos */
+}
+
+/* Estilo para la tabla */
+.table {
+    margin-top: 2rem;
+    margin-left: 25px;  /* Añadir margen a la izquierda */
+    margin-right: 25px; /* Añadir margen a la derecha */
+    width: calc(100% - 40px); /* Ajusta el ancho de la tabla para que no se pegue a los bordes */
+    border-collapse: collapse; /* Hace que las celdas no tengan espacio entre ellas */
+    background-color: #fff; /* Color de fondo blanco para la tabla */
+}
+
+/* Estilo para las celdas de la tabla */
+.table th, .table td {
+    text-align: center;
+    padding: 12px 15px; /* Añadir más espacio dentro de las celdas */
+    border: 1px solid #ddd;  /* Agregar borde entre celdas */
+}
+
+/* Estilo para los encabezados de la tabla */
+.table th {
+    background-color: #007bff; /* Color de fondo azul para los encabezados */
+    color: #fff;  /* Color de texto blanco */
+    font-weight: bold;
+}
+
+/* Estilo para los botones de acción */
+.btn {
+    margin-right: 10px;
+    height: 40px;
+    font-size: 1rem;
+}
+
+.btn-danger {
+    background-color: #dc3545; /* Color rojo para el botón de eliminar */
+}
+
+.btn-warning {
+    background-color: #ffc107; /* Color amarillo para editar */
+}
+
+/* Botón para generar reporte PDF */
+.btn-generate {
+    background-color: #28a745; /* Color verde para el botón de generar reporte */
+    color: white;
+    font-size: 1rem;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-generate:hover {
+    background-color: #218838; /* Hover efecto */
+}
+
+/* Paginación */
+.pagination {
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.page-link {
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.page-link:hover {
+    background-color: #ddd; /* Efecto hover en los enlaces de página */
+}
+
+.page-item.disabled .page-link {
+    background-color: #e9ecef; /* Color gris para los enlaces deshabilitados */
+    cursor: not-allowed;
+}
+
+/* Estilos para el filtro de fecha */
+.datepicker {
+    width: 220px;
+}
+
+/* Responsive: ajusta el diseño en pantallas pequeñas */
+@media (max-width: 768px) {
+    .filters {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filters input,
+    .filters select,
+    .filters button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .table {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+    }
+}

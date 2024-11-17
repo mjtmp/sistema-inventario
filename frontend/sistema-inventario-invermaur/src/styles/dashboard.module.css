@@ -1,0 +1,97 @@
+.dashboardContainer {
+    margin-top: 80px;  /* Añadido para separar del header */
+    padding-bottom: 50px;  /* Asegurando que el footer no tape el contenido */
+}
+
+.dashboardHeader {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    text-align: center;  /* Centrado del título */
+}
+
+.metricsRow {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;  /* Centrado de las tarjetas */
+}
+
+.chartRow {
+    display: flex;
+    justify-content: center;  /* Centrado de las gráficas */
+    /*gap: 2rem;*/
+}
+
+.card-body {
+    padding: 1.5rem;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+}
+
+.card-body h5 {
+    font-size: 1.25rem;
+    color: #3498db;
+}
+
+.card-body p {
+    font-size: 1.1rem;
+}
+
+.card-body .display-4 {
+    font-size: 1.5rem;
+}
+
+.mt-4 {
+    margin-top: 0.5rem;
+}
+
+.mb-4 {
+    margin-bottom: 0.5rem;
+}
+
+/* Estilos para las métricas 4x4 */
+.card {
+    width: 100%;  /* Asegura que las tarjetas sean del mismo tamaño */
+    min-height: 150px;
+}
+
+/* Colores o fondos específicos para el Dashboard */
+.dashboardHeader {
+    color: #2c3e50;
+}
+
+.card-body {
+    background-color: #f4f4f4;
+    border-radius: 8px;
+}
+
+.card-body h5 {
+    color: #3498db;
+}
+
+/* Ajustes a las columnas de métricas */
+@media (min-width: 768px) {
+    .metricsRow .col-md-3 {
+        flex: 0 0 23%;  /* Esto asegura que haya 4 columnas en una fila */
+        max-width: 23%;
+    }
+}
+
+@media (max-width: 767px) {
+    .metricsRow .col-md-3 {
+        flex: 0 0 48%;  /* Para dispositivos móviles, 2 columnas */
+        max-width: 48%;
+    }
+}
+
+@media (max-width: 480px) {
+    .metricsRow .col-md-3 {
+        flex: 0 0 100%;  /* En pantallas muy pequeñas, 1 columna */
+        max-width: 100%;
+    }
+}
+
+
+.card {
+    min-height: 150px;  /* Ajuste para tarjetas más pequeñas */
+}

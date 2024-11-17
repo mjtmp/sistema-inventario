@@ -1,0 +1,99 @@
+/* Contenedor principal para ocupar toda la pantalla */
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Contenido principal donde se ubicará el formulario de nueva factura */
+.mainContent {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding-left: 250px; /* Espacio para el sidebar */
+    padding-right: 20px; /* Espacio para la barra de desplazamiento */
+}
+
+/* Título de la página */
+.title {
+    text-align: center;
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+}
+
+/* Estilos para el formulario */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-control {
+    border-radius: 4px;
+    font-size: 1rem;
+    padding: 0.75rem;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    margin-right: 0.5rem;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    border-color: #3498db;
+}
+
+.btn-secondary {
+    background-color: #7f8c8d;
+    border-color: #7f8c8d;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+    border-color: #e74c3c;
+}
+
+.btn-secondary:hover,
+.btn-primary:hover,
+.btn-danger:hover {
+    opacity: 0.8;
+}
+
+/* Ajuste de la tabla y contenedor de productos */
+.productos {
+    margin-top: 1rem;
+}
+
+.productos .form-group {
+    display: flex;
+    align-items: center;
+}
+
+.productos .form-group .form-control {
+    margin-right: 0.5rem;
+}
+
+.productos .form-group button {
+    margin-left: 0.5rem;
+}
+
+/* Adaptación para dispositivos móviles */
+@media (max-width: 768px) {
+    .mainContent {
+        padding-left: 0;
+        padding-right: 1rem;
+    }
+
+    .form-control {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}

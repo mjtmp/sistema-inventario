@@ -1,0 +1,17 @@
+.chartCard {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.chartBody {
+    padding: 1.5rem;
+    background-color: #f9f9f9;
+}
+
+.chartTitle {
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    color: #333;
+}

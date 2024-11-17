@@ -1,0 +1,50 @@
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    overflow-y: auto;
+    padding-top: 1rem;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.optionTitle {
+    padding: 0.75rem;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s ease;
+}
+
+.optionTitle:hover {
+    background-color: #495057;
+}
+
+.arrowRight {
+    transform: rotate(0deg);
+    transition: transform 0.3s ease;
+}
+
+.arrowDown {
+    transform: rotate(90deg);
+    transition: transform 0.3s ease;
+}
+
+.subOptions {
+    padding-left: 1rem;
+    overflow: hidden;
+}
+
+.subOption {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    transition: color 0.2s ease;
+}
+
+.subOption:hover {
+    color: #ffffff;
+}
+
+

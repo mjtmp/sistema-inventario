@@ -1,0 +1,10 @@
+.footer {
+    box-shadow: 0px -2px 8px rgba(0, 0, 0, 0.1);
+    color: #555;
+    position: relative;
+    width: 100%;
+    bottom: 0;
+    background-color: #f8f9fa;
+    font-size: 0.9rem;
+    margin-top: auto;
+}

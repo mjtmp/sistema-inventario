@@ -1,0 +1,56 @@
+/* Contenedor principal que debe ocupar toda la altura de la pantalla */
+.container {
+    min-height: 100vh;  /* Asegura que la página ocupe todo el alto de la ventana */
+    display: flex;
+    flex-direction: column;  /* Coloca los elementos dentro de .container en una columna */
+}
+  
+  /* Contenido principal que ocupa el espacio restante */
+.mainContent {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;  /* Hace que este contenedor crezca y ocupe el espacio restante */
+    padding-left: 250px;  /* Ajusta según el ancho del Sidebar */
+}
+  
+/* Estilos del título */
+.title {
+    text-align: center;
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+  
+/* Estilo para la tabla */
+.table {
+    margin-top: 2rem;
+    margin-left: 25px;  /* Añadir margen a la izquierda */
+    margin-right: 25px; /* Añadir margen a la derecha */
+    width: calc(100% - 40px); /* Ajusta el ancho de la tabla para que no se pegue a los bordes */
+    border-collapse: collapse; /* Hace que las celdas no tengan espacio entre ellas */
+}
+  
+  /* Estilo para las celdas de la tabla (celdas de los productos) */
+.table th, .table td {
+    text-align: center;
+    padding: 8px 12px; /* Añadir espacio dentro de las celdas */
+}
+  
+  /* Estilo para los encabezados de la tabla */
+.table th {
+    background-color: #f8f9fa; /* Un color de fondo para el encabezado */
+    font-weight: bold;  
+}
+  
+  
+  /* Botones */
+.btn {
+    margin-right: 10px;
+}
+
+.form-control {
+    width: 300px; 
+}
+  
+
+  
