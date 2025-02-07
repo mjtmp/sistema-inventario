@@ -13,6 +13,7 @@ const Login = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     const userRol = localStorage.getItem('rol');
+
   
     // Si hay un token, redirige según el rol solo si estamos iniciando sesión
     if (token && router.pathname === '/login') {
@@ -35,7 +36,7 @@ const Login = () => {
         const userRol = response.data.rol;
         localStorage.setItem('token', token);
         localStorage.setItem('rol', userRol); // Guardar el rol del usuario
-
+        localStorage.setItem('name', response.data.usuarioName); // Guardar el nombre del usuario
         if (userRol === 'admin') {
           router.push('/admin-dashboard');
         } else {

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from pydantic import BaseModel  # Importa BaseModel para la validación de los esquemas
 from typing import Optional  # Importa Optional para valores opcionales en los esquemas
 from datetime import datetime  # Importa datetime para manejar fechas y horas
@@ -34,22 +33,16 @@ class Usuario(UsuarioBase):
 
 
 '''from pydantic import BaseModel
-=======
-from pydantic import BaseModel
->>>>>>> fcf9aa17a154f72265472b74da8da620bf9c1c39
 from typing import Optional
 
 class UsuarioBase(BaseModel):
     nombre: str
     email: str
     rol_id: int
-<<<<<<< HEAD
     contraseña: str
     
 class Rol(BaseModel):
     nombre: str
-=======
->>>>>>> fcf9aa17a154f72265472b74da8da620bf9c1c39
 
 class UsuarioCreate(UsuarioBase):
     contraseña: str
@@ -62,13 +55,7 @@ class UsuarioUpdate(BaseModel):
 
 class Usuario(UsuarioBase):
     usuario_id: int
-<<<<<<< HEAD
     rol: Optional[Rol]  # Incluye el esquema del rol como relación
 
     class Config:
         from_attributes = True'''
-=======
-
-    class Config:
-        from_attributes = True
->>>>>>> fcf9aa17a154f72265472b74da8da620bf9c1c39

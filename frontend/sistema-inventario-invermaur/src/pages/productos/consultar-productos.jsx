@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Sidebar from '../../components/Sidebar';
-import Header from '../../layouts/Header';
-import Footer from '../../layouts/Footer';
-import styles from './styles/consultar-productos.module.css';
-import Link from 'next/link';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "bootstrap/dist/css/bootstrap.min.css";
+import Sidebar from "../../components/Sidebar";
+import Header from "../../layouts/Header";
+import Footer from "../../layouts/Footer";
+import styles from "./styles/consultar-productos.module.css";
+import Link from "next/link";
 
 const ConsultarProductos = () => {
   // Estados para manejar productos, búsqueda y paginación
   const [productos, setProductos] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1); // Página actual
   const [limit, setLimit] = useState(10); // Límites de productos por página
   const [totalProductos, setTotalProductos] = useState(0); // Total de productos para calcular la paginación
@@ -19,32 +19,38 @@ const ConsultarProductos = () => {
   useEffect(() => {
     const fetchProductos = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/productos?page=${page}&limit=${limit}`);
+        const response = await axios.get(
+          `http://localhost:8000/productos?page=${page}&limit=${limit}`
+        );
         setProductos(response.data.productos); // Asumimos que la respuesta tiene una propiedad `productos`
         setTotalProductos(response.data.total); // Asumimos que la respuesta tiene la propiedad `total`
       } catch (error) {
-        console.error('Error al cargar los productos:', error);
+        console.error("Error al cargar los productos:", error);
       }
     };
     fetchProductos();
   }, [page, limit]); // Dependencias: se recargará cuando cambien `page` o `limit`
 
   // Filtrar productos por nombre
-  const filteredProductos = productos.filter(producto =>
+  const filteredProductos = productos.filter((producto) =>
     producto.nombre.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Manejar eliminación de un producto
   const handleDelete = async (producto_id) => {
-    const confirmDelete = window.confirm('¿Estás seguro de que deseas eliminar este producto?');
+    const confirmDelete = window.confirm(
+      "¿Estás seguro de que deseas eliminar este producto?"
+    );
     if (confirmDelete) {
       try {
         await axios.delete(`http://localhost:8000/productos/${producto_id}`);
-        setProductos(productos.filter(producto => producto.producto_id !== producto_id));
-        alert('Producto eliminado exitosamente');
+        setProductos(
+          productos.filter((producto) => producto.producto_id !== producto_id)
+        );
+        alert("Producto eliminado exitosamente");
       } catch (error) {
-        console.error('Error al eliminar el producto:', error);
-        alert('Hubo un error al eliminar el producto');
+        console.error("Error al eliminar el producto:", error);
+        alert("Hubo un error al eliminar el producto");
       }
     }
   };
@@ -101,21 +107,35 @@ const ConsultarProductos = () => {
                   <td>{producto.precio}</td>
                   <td>{producto.stock}</td>
                   <td>
-                    {/* Botón para editar */}
-                    <button className="btn btn-warning btn-sm">
+                    <div className="flex flex-row gap-2" style={{
+                      justifyContent: 'flex-end',
+                      margin: 'auto',
+                      
+                    }}>
+                      {/* Botón para editar */}
+                      <button className="btn btn-warning btn-sm mr-2">
                         {producto.producto_id ? (
-                            <Link href={`/productos/${producto.producto_id}`}>Editar</Link>
+                          <Link
+                            style={{
+                              textDecoration: "none",
+                              color: "white",
+                            }}
+                            href={`/productos/${producto.producto_id}`}
+                          >
+                            Editar
+                          </Link>
                         ) : (
-                            <span>No ID disponible</span>
+                          <span>No ID disponible</span>
                         )}
-                    </button>
-                    {/* Botón para eliminar */}
-                    <button
-                      className="btn btn-danger btn-sm ml-2"
-                      onClick={() => handleDelete(producto.producto_id)}
-                    >
-                      Eliminar
-                    </button>
+                      </button>
+                      {/* Botón para eliminar */}
+                      <button
+                        className="btn btn-danger btn-sm mr-2"
+                        onClick={() => handleDelete(producto.producto_id)}
+                      >
+                        Eliminar
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -125,16 +145,22 @@ const ConsultarProductos = () => {
           {/* Paginación */}
           <nav>
             <ul className="pagination justify-content-center">
-              <li className={`page-item ${page === 1 ? 'disabled' : ''}`}>
-                <button className="page-link" onClick={handlePreviousPage}>Anterior</button>
+              <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
+                <button className="page-link" onClick={handlePreviousPage}>
+                  Anterior
+                </button>
               </li>
               <li className="page-item">
                 <span className="page-link">
                   Página {page} de {totalPages}
                 </span>
               </li>
-              <li className={`page-item ${page === totalPages ? 'disabled' : ''}`}>
-                <button className="page-link" onClick={handleNextPage}>Siguiente</button>
+              <li
+                className={`page-item ${page === totalPages ? "disabled" : ""}`}
+              >
+                <button className="page-link" onClick={handleNextPage}>
+                  Siguiente
+                </button>
               </li>
             </ul>
           </nav>

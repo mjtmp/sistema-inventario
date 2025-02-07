@@ -1,53 +1,73 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Sidebar from '../../components/Sidebar';
-import Header from '../../layouts/Header';
-import Footer from '../../layouts/Footer';
-import styles from './styles/inventario.module.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "bootstrap/dist/css/bootstrap.min.css";
+import Sidebar from "../../components/Sidebar";
+import Header from "../../layouts/Header";
+import Footer from "../../layouts/Footer";
+import styles from "./styles/inventario.module.css";
 
 const Inventario = () => {
   // Estados para los productos y filtros
   const [productos, setProductos] = useState([]);
   const [reportes, setReportes] = useState([]);
-  const [fechaInicio, setFechaInicio] = useState('');
-  const [fechaFin, setFechaFin] = useState('');
-  const [productoFiltro, setProductoFiltro] = useState('');
-  const fechaCreacion = new Date(productos.fecha_creacion);  // Asegúrate de que esto esté bien
+  const [fechaInicio, setFechaInicio] = useState("");
+  const [fechaFin, setFechaFin] = useState("");
+  const [productoFiltro, setProductoFiltro] = useState("");
+  const fechaCreacion = new Date(productos.fecha_creacion); // Asegúrate de que esto esté bien
   const fechaActualizacion = new Date(productos.fecha_actualizacion);
 
-  console.log(fechaCreacion);  // Verifica en consola si la fecha es válida
+
+  // Estados para el modal de imagen
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState("");
+
+ // Función para abrir el modal con la imagen seleccionada
+ const openModal = (imageSrc) => {
+  setSelectedImage(imageSrc);
+  setModalOpen(true);
+};
+
+// Función para cerrar el modal
+const closeModal = () => {
+  setModalOpen(false);
+  setSelectedImage("");
+};
+  console.log(fechaCreacion); // Verifica en consola si la fecha es válida
 
   // Si las fechas son correctas, formatea las fechas para mostrarlas
   const formattedFechaCreacion = fechaCreacion.toLocaleDateString();
   const formattedFechaActualizacion = fechaActualizacion.toLocaleDateString();
 
   useEffect(() => {
-    axios.get('http://localhost:8000/productos')
-      .then(response => {
-        console.log('Datos del backend:', response.data);
+    axios
+      .get("http://localhost:8000/productos")
+      .then((response) => {
+        console.log("Datos del backend:", response.data);
         // Acceder al array de productos dentro de la respuesta
-        setProductos(Array.isArray(response.data.productos) ? response.data.productos : []);
+        setProductos(
+          Array.isArray(response.data.productos) ? response.data.productos : []
+        );
       })
-      .catch(error => {
-        console.error('Error al cargar los productos:', error);
+      .catch((error) => {
+        console.error("Error al cargar los productos:", error);
       });
   }, []);
 
   // Función para cargar reportes de inventario filtrados
   const cargarReportes = () => {
-    axios.get('http://localhost:8000/reportes-inventario', {
-      params: {
-        fecha_inicio: fechaInicio,
-        fecha_fin: fechaFin,
-        producto_id: productoFiltro,
-      },
-    })
-      .then(response => {
+    axios
+      .get("http://localhost:8000/reportes-inventario", {
+        params: {
+          fecha_inicio: fechaInicio,
+          fecha_fin: fechaFin,
+          producto_id: productoFiltro,
+        },
+      })
+      .then((response) => {
         setReportes(response.data);
       })
-      .catch(error => {
-        console.error('Error al cargar los reportes:', error);
+      .catch((error) => {
+        console.error("Error al cargar los reportes:", error);
       });
   };
 
@@ -58,44 +78,50 @@ const Inventario = () => {
         <Header />
         <div className="container mt-5">
           <h2 className={styles.title}>Inventario</h2>
-          
+
           {/* Filtros de Reportes */}
           <div className="row mb-4">
             <div className="col-md-3">
               <label>Fecha Inicio</label>
-              <input 
-                type="date" 
-                className="form-control" 
-                value={fechaInicio} 
-                onChange={(e) => setFechaInicio(e.target.value)} 
+              <input
+                type="date"
+                className="form-control"
+                value={fechaInicio}
+                onChange={(e) => setFechaInicio(e.target.value)}
               />
             </div>
             <div className="col-md-3">
               <label>Fecha Fin</label>
-              <input 
-                type="date" 
-                className="form-control" 
-                value={fechaFin} 
-                onChange={(e) => setFechaFin(e.target.value)} 
+              <input
+                type="date"
+                className="form-control"
+                value={fechaFin}
+                onChange={(e) => setFechaFin(e.target.value)}
               />
             </div>
             <div className="col-md-3">
               <label>Producto</label>
-              <select 
-                className="form-control" 
-                value={productoFiltro} 
+              <select
+                className="form-control"
+                value={productoFiltro}
                 onChange={(e) => setProductoFiltro(e.target.value)}
               >
                 <option value="">Todos</option>
-                {productos && productos.map(producto => (
-                  <option key={producto.producto_id} value={producto.producto_id}>
-                    {producto.nombre}
-                  </option>
-                ))}
+                {productos &&
+                  productos.map((producto) => (
+                    <option
+                      key={producto.producto_id}
+                      value={producto.producto_id}
+                    >
+                      {producto.nombre}
+                    </option>
+                  ))}
               </select>
             </div>
             <div className="col-md-3 d-flex align-items-end">
-              <button onClick={cargarReportes} className="btn btn-primary">Filtrar</button>
+              <button onClick={cargarReportes} className="btn btn-primary">
+                Filtrar
+              </button>
             </div>
           </div>
 
@@ -116,15 +142,24 @@ const Inventario = () => {
               </tr>
             </thead>
             <tbody>
-              {productos.map(producto => (
+              {productos.map((producto) => (
                 <tr key={producto.producto_id}>
                   <td>{producto.nombre}</td>
                   <td>{producto.descripcion}</td>
                   <td>{producto.precio}</td>
-                  <td>{producto.tiene_iva ? 'Sí' : 'No'}</td>
+                  <td>{producto.tiene_iva ? "Sí" : "No"}</td>
                   <td>{producto.stock}</td>
                   <td>{producto.proveedor_id}</td>
-                  <td>{producto.codigo_barras}</td>
+                  <td>
+                  <img
+                      className="img-fluid w-25 h-25 mx-auto d-block"
+                      src={`http://localhost:8000/${producto.codigo_barras}`}
+                      alt={producto.codigo_barras}
+                      onClick={() => openModal(`http://localhost:8000/${producto.codigo_barras}`)}
+                      style={{ cursor: "pointer" }}
+                    />
+                  </td>
+
                   <td>{formattedFechaCreacion}</td>
                   <td>{formattedFechaActualizacion}</td>
                 </tr>
@@ -143,16 +178,50 @@ const Inventario = () => {
               </tr>
             </thead>
             <tbody>
-              {reportes.map(reporte => (
+              {reportes.map((reporte) => (
                 <tr key={reporte.reporte_id}>
                   <td>{reporte.fecha}</td>
-                  <td>{reporte.producto ? reporte.producto.nombre : 'N/A'}</td>
+                  <td>{reporte.producto ? reporte.producto.nombre : "N/A"}</td>
                   <td>{reporte.stock}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+
+   {/* Modal para mostrar la imagen en pantalla completa */}
+   {modalOpen && (
+          <div
+            className="modal show d-block"
+            tabIndex="-1"
+            onClick={closeModal}
+            style={{
+              backgroundColor: "rgba(0, 0, 0, 0.8)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content">
+                <img
+                  src={selectedImage}
+                  alt="Código de Barras"
+                  className="img-fluid"
+                  style={{ borderRadius: "5px" }}
+                />
+                <button
+                  className="btn btn-danger mt-2"
+                  onClick={closeModal}
+                  style={{ position: "absolute", top: "10px", right: "10px" }}
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <Footer />
       </div>
     </div>
@@ -160,4 +229,3 @@ const Inventario = () => {
 };
 
 export default Inventario;
-

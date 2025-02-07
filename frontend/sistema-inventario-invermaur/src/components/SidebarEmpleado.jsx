@@ -22,7 +22,6 @@ const Sidebar = ({ children }) => {
         {
             title: "Productos",
             subOptions: [
-                { name: "Añadir Producto", path: "/productos/anadir-producto" },
                 { name: "Consultar Productos", path: "/productos/consultar-productos" },
                 { name: "Inventario", path: "/productos/inventario" }
             ],
@@ -30,7 +29,6 @@ const Sidebar = ({ children }) => {
         {
             title: "Proveedores",
             subOptions: [
-                { name: "Añadir Proveedor", path: "/proveedores/anadir-proveedor" },
                 { name: "Consultar Proveedores", path: "/proveedores/consultar-proveedores" }
             ],
         },
@@ -44,23 +42,7 @@ const Sidebar = ({ children }) => {
         {
             title: "Gestión de Existencias",
             subOptions: [
-                {
-                    name: "Entrada",
-                    path: "/existencias/entrada",
-                    hasSubOptions: true,
-                    subOptions: [
-                        { name: "Entrada de Inventario", path: "/existencias/entrada-inventario" },
-                        { name: "Listado de Inventario", path: "/existencias/listar-entradas" }
-                    ]
-                },
                 { name: "Salida", path: "/existencias/listar-salidas" }
-            ],
-        },
-        {
-            title: "Usuarios",
-            subOptions: [
-                { name: "Gestionar Usuarios", path: "/usuarios/gestionar-usuarios" },
-                { name: "Roles y Permisos", path: "/usuarios/roles-permisos" }
             ],
         },
         {
@@ -79,7 +61,7 @@ const Sidebar = ({ children }) => {
         
         
         <div className={`bg-dark text-white ${styles.sidebar}`}>
-            <h2 className={`text-center my-4 ${styles.title}`}>Panel de Administración</h2>
+            <h2 className={`text-center my-4 ${styles.title}`}>Panel de Empleado</h2>
             <div className="list-group">
                 {options.map((option, index) => (
                     <div key={index} className="mb-2">

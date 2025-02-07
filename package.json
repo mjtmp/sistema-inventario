@@ -1,14 +1,10 @@
 {
   "dependencies": {
     "axios": "^1.7.7",
-<<<<<<< HEAD
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.6",
     "react-chartjs-2": "^5.2.0",
     "recharts": "^2.13.3",
     "tailwindcss": "^3.4.14"
-=======
-    "bootstrap": "^5.3.3"
->>>>>>> fcf9aa17a154f72265472b74da8da620bf9c1c39
   }
 }

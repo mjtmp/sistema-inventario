@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from typing import List  # Importa para especificar listas en tipos de retorno
 from fastapi import APIRouter, Depends, HTTPException  # Importaciones necesarias para rutas en FastAPI
 from sqlalchemy.orm import Session  # Para manejar la sesión de la base de datos
@@ -74,18 +73,6 @@ from database import SessionLocal
 
 router = APIRouter()
 
-=======
-from typing import List
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from ..crud.pedidos import get_pedido, get_pedidos, create_pedido, update_pedido, delete_pedido
-from ..schemas.pedidos import Pedido, PedidoCreate, PedidoUpdate
-from backend.database import SessionLocal
-
-router = APIRouter()
-
-# Dependencia para obtener la sesión de la base de datos
->>>>>>> fcf9aa17a154f72265472b74da8da620bf9c1c39
 def get_db():
     db = SessionLocal()
     try:
@@ -120,7 +107,6 @@ def eliminar_pedido(pedido_id: int, db: Session = Depends(get_db)):
     db_pedido = delete_pedido(db=db, pedido_id=pedido_id)
     if db_pedido is None:
         raise HTTPException(status_code=404, detail="Pedido no encontrado")
-<<<<<<< HEAD
     return db_pedido'''
 
 
@@ -173,6 +159,3 @@ def eliminar_pedido(pedido_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Pedido no encontrado")
     return db_pedido
 '''
-=======
-    return db_pedido
->>>>>>> fcf9aa17a154f72265472b74da8da620bf9c1c39

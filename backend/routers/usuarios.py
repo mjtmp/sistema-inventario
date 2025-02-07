@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from fastapi import APIRouter, Depends, HTTPException  # Importa las clases necesarias de FastAPI
 from sqlalchemy.orm import Session  # Importa la clase Session de SQLAlchemy
 from crud.usuarios import get_usuario, get_usuarios, get_usuario_by_email, create_usuario, update_usuario, delete_usuario  # Importa las funciones CRUD
@@ -71,13 +70,6 @@ from sqlalchemy.orm import Session
 from crud.usuarios import get_usuario, get_usuarios, get_usuario_by_email, create_usuario, update_usuario, delete_usuario
 from schemas.usuarios import Usuario, UsuarioCreate, UsuarioUpdate
 from database import SessionLocal
-=======
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from ..crud.usuarios import get_usuario, get_usuarios, get_usuario_by_email, create_usuario, update_usuario, delete_usuario
-from ..schemas.usuarios import Usuario, UsuarioCreate, UsuarioUpdate
-from backend.database import SessionLocal
->>>>>>> fcf9aa17a154f72265472b74da8da620bf9c1c39
 
 router = APIRouter()
 
@@ -120,7 +112,4 @@ def eliminar_usuario(usuario_id: int, db: Session = Depends(get_db)):
     if db_usuario is None:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return db_usuario
-<<<<<<< HEAD
 '''
-=======
->>>>>>> fcf9aa17a154f72265472b74da8da620bf9c1c39

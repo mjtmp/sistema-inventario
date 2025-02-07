@@ -1,24 +1,53 @@
 .metricCard {
-    border: 1px solid #dcdcdc;
-    border-radius: 8px;
-    margin-bottom: 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
     background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+}
+
+.metricCard:hover {
+    background-color: #f9f9f9;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    outline: 0.1rem solid #007bff;
+    stroke: #007bff;
+
 }
 
 .metricBody {
-    padding: 1.5rem;
+    padding: 2rem;
     text-align: center;
 }
 
 .metricTitle {
     font-size: 1.2rem;
-    font-weight: 500;
-    color: #555;
-    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .metricValue {
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: bold;
     color: #007bff;
+    margin-top: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .metricBody {
+        padding: 1.5rem;
+    }
+
+    .metricTitle {
+        font-size: 1.2rem;
+    }
+
+    .metricValue {
+        font-size: 2rem;
+    }
 }

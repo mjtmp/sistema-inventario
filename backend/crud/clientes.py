@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from sqlalchemy.orm import Session  # Importamos Session para interactuar con la base de datos.
 from datetime import datetime  # Para obtener la fecha y hora actual.
 from models.models import Cliente  # Importamos el modelo Cliente para interactuar con la tabla correspondiente.
@@ -45,39 +44,3 @@ def delete_cliente(db: Session, cliente_id: int):
         return db_cliente  # Retornamos el cliente eliminado.
     return None  # Si el cliente no se encuentra, retornamos None.
 
-=======
-from sqlalchemy.orm import Session
-from ..models.models import Cliente
-from ..schemas.clientes import ClienteCreate, ClienteUpdate
-
-def get_cliente(db: Session, cliente_id: int):
-    return db.query(Cliente).filter(Cliente.cliente_id == cliente_id).first()
-
-def get_clientes(db: Session, skip: int = 0, limit: int = 10):
-    return db.query(Cliente).offset(skip).limit(limit).all()
-
-def create_cliente(db: Session, cliente: ClienteCreate):
-    db_cliente = Cliente(**cliente.dict())
-    db.add(db_cliente)
-    db.commit()
-    db.refresh(db_cliente)
-    return db_cliente
-
-def update_cliente(db: Session, cliente_id: int, cliente: ClienteUpdate):
-    db_cliente = get_cliente(db, cliente_id)
-    if db_cliente:
-        for key, value in cliente.dict(exclude_unset=True).items():
-            setattr(db_cliente, key, value)
-        db.commit()
-        db.refresh(db_cliente)
-        return db_cliente
-    return None
-
-def delete_cliente(db: Session, cliente_id: int):
-    db_cliente = get_cliente(db, cliente_id)
-    if db_cliente:
-        db.delete(db_cliente)
-        db.commit()
-        return db_cliente
-    return None
->>>>>>> fcf9aa17a154f72265472b74da8da620bf9c1c39

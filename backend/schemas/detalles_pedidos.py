@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Importar las dependencias necesarias
 from pydantic import BaseModel
 from typing import Optional
@@ -26,26 +25,3 @@ class DetallePedido(DetallePedidoBase):
     class Config:
         from_attributes = True  # Permite la conversión de atributos del modelo a pydantic
 
-=======
-from pydantic import BaseModel
-from typing import Optional
-
-class DetallePedidoBase(BaseModel):
-    pedido_id: int
-    producto_id: int
-    cantidad: int
-    precio_unitario: float
-
-class DetallePedidoCreate(DetallePedidoBase):
-    pass
-
-class DetallePedidoUpdate(BaseModel):
-    cantidad: Optional[int]
-    precio_unitario: Optional[float]
-
-class DetallePedido(DetallePedidoBase):
-    detalle_id: int
-
-    class Config:
-        from_attributes = True
->>>>>>> fcf9aa17a154f72265472b74da8da620bf9c1c39
