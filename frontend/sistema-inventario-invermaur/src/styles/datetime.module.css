@@ -1,0 +1,26 @@
+.datetime {
+    top: 10px;
+    right: 20px; /* Alinea a la derecha */
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff; /* Cambia el color del texto a blanco */
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5); /* Fondo semitransparente */
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra suave */
+}
+
+.date, .time {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.icon {
+    color: #e0c77c;
+    /*color: #ffc107;  Color amarillo para los íconos */
+}
+

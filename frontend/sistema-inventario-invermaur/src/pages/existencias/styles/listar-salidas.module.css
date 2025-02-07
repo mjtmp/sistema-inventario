@@ -1,152 +1,176 @@
-/* Contenedor principal para ocupar toda la pantalla */
 .container {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(to bottom, #e9efff 20%, #b3c8f1 80%);
 }
 
-/* Contenido principal donde se ubicarán las salidas */
 .mainContent {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    padding-left: 250px; /* Espacio para el sidebar */
-    padding-right: 20px; /* Espacio para la barra de desplazamiento */
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding-left: 250px;
 }
 
-/* Título de la página */
+.contentWrapper {
+  background: transparent;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.searchContainer {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  justify-content: center;
+}
+
+.searchInput {
+  max-width: 600px;
+  width: 70%;
+  padding-left: 10px;
+  padding-right: 10px;
+  height: 50px;
+  border: 1px solid #ced4da;
+  border-radius: 25px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.searchInput:focus {
+  outline: none;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.btnPrimary {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  height: 50px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.btnPrimario {
+  background-color: #007bff;
+  color: white;
+  padding: 5px 8px;
+  font-size: 0.8rem;
+  border-radius: 3px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+}
+
 .title {
-    text-align: center;
-    font-size: 2.5rem;
-    color: #2c3e50;
-    margin-bottom: 1.5rem;
-    font-weight: bold;
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #2a4d8f;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
 }
 
-/* Botón de nueva factura */
-.btn-primary {
-    background-color: #3498db;
-    border-color: #3498db;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    font-weight: bold;
-    border-radius: 4px;
-    transition: background-color 0.3s ease, transform 0.3s ease;
+.loadingText {
+  font-size: 1.2rem;
+  text-align: center;
+  color: #666;
 }
 
-.btn-primary:hover {
-    background-color: #2980b9;
-    transform: translateY(-2px);
+.customTable {
+  max-width: 950px;
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 0 auto;
+  margin-bottom: 10px;
 }
 
-/* Campo de búsqueda */
-.form-control {
-    margin-bottom: 1rem;
-    font-size: 1rem;
-    border-radius: 4px;
+.customTable th, 
+.customTable td {
+  padding: 10px;
+  text-align: center;
+  border: none;
 }
 
-/* Tabla de salidas */
-.table {
-    margin: 1rem 0;
-    width: 100%;
-    border-collapse: collapse;
-    border: 1px solid #dee2e6;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.customTable th {
+  background-color: #001327;
+  color: #fff;
 }
 
-.table th,
-.table td {
-    text-align: center;
-    padding: 12px;
-    border-bottom: 1px solid #dee2e6;
+.actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
 }
 
-.table th {
-    background-color: #34495e;
-    color: #ecf0f1;
-    font-weight: bold;
+.btnInfo, .btnWarning, .btnSuccess, .btnDanger, .btnSecondary {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
-.table td {
-    background-color: #ecf0f1;
-    color: #34495e;
+.btnInfo { background-color: #17a2b8; color: white; }
+.btnWarning { background-color: #ffc107; color: black; }
+.btnSuccess { background-color: #28a745; color: white; }
+.btnDanger { background-color: #dc3545; color: white; }
+.btnSecondary { background-color: #6c757d; color: white; }
+
+.btnDangerSmall {
+  background-color: #dc3545;
+  color: white;
+  padding: 3px 6px;
+  font-size: 0.8rem;
+  border-radius: 3px;
 }
 
-.table tr:nth-child(even) {
-    background-color: #bdc3c7; /* Para filas alternadas */
+.formGroup {
+  margin-bottom: 15px;
 }
 
-/* Botones de acción (ver pago/abonar/editar/eliminar/imprimir) */
-.btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-    font-weight: bold;
-    border-radius: 4px;
-    color: #fff;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    margin-right: 0.5rem;
+.inputField {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
-.btn-info {
-    background-color: #1abc9c;
-    border-color: #1abc9c;
+.summary {
+  margin-top: 20px;
+  font-size: 1rem;
+  color: #333;
 }
 
-.btn-info:hover {
-    background-color: #16a085;
+.graficasContainer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px; /* Espacio entre las gráficas */
 }
 
-.btn-warning {
-    background-color: #f39c12;
-    border-color: #f39c12;
+.grafica {
+  background-color: #fff;
+  border-radius: 8px;
+  flex: 1; /* Ajusta el ancho de las gráficas */
+  min-width: 0; /* Evita que las gráficas se desborden */
 }
 
-.btn-warning:hover {
-    background-color: #e67e22;
-}
-
-.btn-success {
-    background-color: #2ecc71;
-    border-color: #2ecc71;
-}
-
-.btn-success:hover {
-    background-color: #27ae60;
-}
-
-.btn-danger {
-    background-color: #e74c3c;
-    border-color: #e74c3c;
-}
-
-.btn-danger:hover {
-    background-color: #c0392b;
-}
-
-.btn-secondary {
-    background-color: #7f8c8d;
-    border-color: #7f8c8d;
-}
-
-.btn-secondary:hover {
-    background-color: #95a5a6;
-}
-
-/* Adaptación para dispositivos móviles */
-@media (max-width: 768px) {
-    .mainContent {
-        padding-left: 0;
-        padding-right: 1rem;
-    }
-
-    .table {
-        width: 100%;
-        margin: 1rem 0;
-    }
-
-    .title {
-        font-size: 2rem;
-    }
-}

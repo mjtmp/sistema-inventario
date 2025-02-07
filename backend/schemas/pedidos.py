@@ -1,26 +1,25 @@
-from pydantic import BaseModel  # Base para esquemas en FastAPI
-from datetime import date  # Para manejar fechas
-from typing import List, Optional  # Tipos opcionales y listas
-from .detalles_pedidos import DetallePedido  # Relación con detalles del pedido
+from pydantic import BaseModel
+from datetime import date
+from typing import List, Optional
+from .detalles_pedidos import DetallePedido
 
-# Esquema base que contiene los campos comunes
 class PedidoBase(BaseModel):
-    cliente_id: int  # Relación con el cliente
-    fecha_pedido: date  # Fecha del pedido
+    cliente_id: int
+    fecha_pedido: date
+    estado: str
 
-# Esquema para la creación de un pedido
 class PedidoCreate(PedidoBase):
-    pass  # Hereda los campos del esquema base
+    detalles: List[DetallePedido]
+    usuario_id: int  # Asegurar que usuario_id está incluido
 
-# Esquema para la actualización de un pedido
-class PedidoUpdate(PedidoBase):
-    pass  # Hereda los campos del esquema base
+class PedidoUpdate(BaseModel):
+    estado: Optional[str]
+    usuario_id: int  # Incluir usuario_id
 
-# Esquema para representar un pedido completo
 class Pedido(PedidoBase):
-    pedido_id: int  # Identificador único del pedido
-    detalles: List[DetallePedido] = []  # Lista de detalles relacionados
+    pedido_id: int
+    detalles: List[DetallePedido] = []
 
-    # Configuración adicional para usar atributos del modelo ORM
     class Config:
         from_attributes = True
+

@@ -3,21 +3,17 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #f5f5f5;
+    background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 50%, #f0f4f8 100%); /* Gradiente suave */
 }
 
 .login-card {
     width: 25rem;
     padding: 2rem;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    background-color: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Intensifica la sombra para más profundidad */
+    border-radius: 10px; /* Mayor redondeo */
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo ligeramente transparente */
+    backdrop-filter: blur(10px); /* Añade un desenfoque de fondo */
 }
-
-/*.login-logo {
-    width: 50%;
-    margin-bottom: 1rem;
-}*/
 
 .login-logo {
     width: 150px; 
@@ -27,8 +23,8 @@
 }
 
 .login-title {
-    font-size: 1.2rem;
-    font-weight: 600;
+    font-size: 1.5rem; /* Aumenta el tamaño de la fuente */
+    font-weight: bold; /* Negrita */
     margin-bottom: 1.5rem;
     color: #333;
 }
@@ -42,10 +38,45 @@
     font-size: 1rem;
     font-weight: bold;
     margin-top: 1.5rem;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
+    border-radius: 8px; /* Mayor redondeo */
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .login-button:hover {
     background-color: #0056b3;
+    transform: translateY(-2px); /* Añade un ligero efecto de elevación */
 }
+
+.form-group {
+    margin-bottom: 1.5rem; /* Espacio adicional entre los campos */
+}
+
+.form-control {
+    border-radius: 8px; /* Mayor redondeo */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra para mayor profundidad */
+    padding: 0.75rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #3498db;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Intensifica la sombra al enfocar */
+    outline: none;
+}
+
+.register-link {
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.register-text {
+  color: #007bff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.register-text:hover {
+  color: #0056b3;
+  text-decoration: none;
+}
+

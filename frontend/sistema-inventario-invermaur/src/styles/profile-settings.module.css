@@ -1,0 +1,55 @@
+.profileSettingsContainer {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+    max-width: 800px;
+    margin-bottom: 20px;
+}
+
+.title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #2a4d8f;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.boldLabel {
+    font-weight: 700;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Espacio entre el icono y el texto */
+}
+
+.icon {
+    color: #2a4d8f;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #555;
+}
+
+.form-control {
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.form-control:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
+
+.btn-primary {
+    width: 100%;
+    background-color: #007bff;
+    border: none;
+    transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}

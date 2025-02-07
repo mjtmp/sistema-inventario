@@ -1,153 +1,208 @@
-/* Contenedor principal para ocupar toda la pantalla */
 .container {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(to bottom, #e9efff 20%, #b3c8f1 80%);
 }
 
-/* Contenido principal donde se ubicarán los usuarios */
 .mainContent {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    padding-left: 250px; /* Espacio para el sidebar */
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding-left: 250px;
 }
 
-/* Título de la página */
+.contentWrapper {
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 2rem auto;
+  max-width: 900px;
+  width: 80%;
+}
+
 .title {
     text-align: center;
-    font-size: 2rem;
-    color: #333;
-    margin-bottom: 1rem;
-    font-weight: bold;
+    font-size: 2.5rem; /* Más grande */
+    font-weight: bold; /* Enfatiza el título */
+    color: #2a4d8f;
+    margin-bottom: 2rem;
 }
 
-/* Filtro de búsqueda */
-.searchBar {
-    margin: 1rem 25px;
-    display: flex;
-    justify-content: center;
+.searchContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-bottom: 1rem;
 }
 
-.searchBar input {
-    width: 100%;
-    max-width: 500px;
-    padding: 0.5rem;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    outline: none;
-    transition: border-color 0.3s ease-in-out;
+.searchInput {
+  max-width: 600px;
+  padding-right: 10px;
+  height: 50px;
+  border: 1px solid #ced4da;
+  border-radius: 25px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
 }
 
-.searchBar input:focus {
-    border-color: #007bff;
+.searchInput:focus {
+  outline: none;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
 }
 
-/* Tabla de usuarios */
+.tableWrapper {
+  overflow-x: auto;
+}
+
 .table {
-    margin: 1rem 25px;
-    width: calc(100% - 50px);
-    border-collapse: collapse;
-    border: 1px solid #dee2e6;
+  width: 80%;
+  margin-bottom: 1rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #fff;
+  margin: 0 auto;
 }
 
-.table th,
+.table th, 
 .table td {
-    text-align: center;
-    padding: 8px 12px;
-    border-bottom: 1px solid #dee2e6;
+  padding: 0.75rem;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 1rem;
 }
 
 .table th {
-    background-color: #f8f9fa;
-    font-weight: bold;
-    color: #0056b3;
+  background-color: #2a4d8f;
+  /*background-color: #001327;*/
+  color: #fff;
 }
 
-.table td {
-    background-color: #ffffff;
-    color: #333;
+.buttonGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.table tr:nth-child(even) {
-    background-color: #f2f2f2;
+.btnPrimary {
+  width: 100%;
+  background: #315baf;
+  border: none;
+  color: #fff;
+  font-weight: bold;
+  padding: 10px;
+  border-radius: 5px;
+  transition: background-color 0.2s ease, transform 0.2s;
 }
 
-/* Botones de acción */
-.btn {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.9rem;
-    font-weight: bold;
-    border-radius: 4px;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
-    margin-right: 5px;
+.btnPrimary:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
 }
 
-.btn-primary {
-    background-color: #007bff;
+.btnSecondary {
+  width: 100%;
+  padding: 10px 20px;
+  background-color: #6c757d;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s, transform 0.2s;
 }
 
-.btn-primary:hover {
-    background-color: #0056b3;
+.btnSecondary:hover {
+  background-color: #5a6268;
+  transform: translateY(-2px);
 }
 
-.btn-danger {
-    background-color: #dc3545;
+.marginBottom {
+  margin: 20px 0;
 }
 
-.btn-danger:hover {
-    background-color: #a71d2a;
+.btnUsers {
+    margin-left: 105px;
 }
 
-/* Botón de agregar usuario */
-.addButton {
-    display: flex;
-    justify-content: center;
-    margin: 2rem 0;
+.modalContent {
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  margin: 2rem auto;
 }
 
-.addButton button {
-    padding: 0.6rem 1.2rem;
-    font-size: 1rem;
-    font-weight: bold;
-    color: #fff;
-    background-color: #28a745;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
+.formGroup {
+  margin-bottom: 15px;
 }
 
-.addButton button:hover {
-    background-color: #1e7e34;
+.inputField {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
-/* Adaptación para dispositivos móviles */
-@media (max-width: 768px) {
-    .mainContent {
-        padding-left: 0;
-        padding-right: 1rem;
-    }
+.modalTitle {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
 
-    .table {
-        width: 100%;
-        margin: 1rem 0;
-    }
+.modalFooter {
+  display: flex;
+  justify-content: space-between;
+}
 
-    .title {
-        font-size: 1.8rem;
-    }
+/* Estilos para el select de roles */
+.selectRole {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #f1f1f1;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 1rem;
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
 
-    .searchBar {
-        flex-direction: column;
-        align-items: stretch;
-    }
+.selectRole:focus {
+  outline: none;
+  background-color: #e6f3ff;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
 
-    .searchBar input {
-        width: 100%;
-    }
+.selectRole:hover {
+  background-color: #e6f3ff;
+}
+
+.selectWrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.selectWrapper:after {
+  content: '▼';
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #888;
 }

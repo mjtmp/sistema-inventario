@@ -1,119 +1,151 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Sidebar from '../../components/Sidebar'; // Componente para la barra lateral
-import Header from '../../layouts/Header'; // Componente para el encabezado
-import Footer from '../../layouts/Footer'; // Componente para el pie de página
-import styles from './styles/editar-proveedor.module.css'; // Estilos locales del componente
-import { useRouter } from 'next/router'; // Hook para manejo de rutas en Next.js
+import Sidebar from '../../components/Sidebar';
+import Header from '../../layouts/Header';
+import Footer from '../../layouts/Footer';
+import styles from './styles/editar-proveedor.module.css';
+import { useRouter } from 'next/router';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faEnvelope, faPhone, faAddressCard, faIdCard, faEdit } from '@fortawesome/free-solid-svg-icons';
 
 const EditarProveedor = () => {
-  const router = useRouter(); // Usamos el hook para obtener el id del proveedor en la URL
-  const { proveedor_id } = router.query; // Extraemos el id del proveedor desde la URL
+  const router = useRouter();
+  const { proveedor_id } = router.query;
 
-  // Estado para manejar los datos del proveedor
   const [proveedor, setProveedor] = useState({
     nombre: '',
     email: '',
     telefono: '',
-    direccion: ''
+    direccion: '',
+    rif: ''  // Nuevo estado para RIF
   });
+  const [usuarioId, setUsuarioId] = useState(null);  // Nuevo estado para el usuario_id
 
-  // useEffect para cargar los datos del proveedor desde la API cuando se obtenga el id
   useEffect(() => {
+    const userId = localStorage.getItem('usuario_id'); // Obtener el usuario_id del almacenamiento local
+    setUsuarioId(userId);
+
     if (proveedor_id) {
-      axios.get(`http://localhost:8000/proveedores/${proveedor_id}`) // Llamada a la API para obtener el proveedor
+      axios.get(`http://localhost:8000/proveedores/${proveedor_id}`)
         .then(response => {
-          const { nombre, email, telefono, direccion } = response.data; // Desestructuramos la respuesta
+          const { nombre, email, telefono, direccion, rif } = response.data;  // Incluir RIF en la respuesta
           setProveedor({
             nombre,
             email,
             telefono,
-            direccion
+            direccion,
+            rif  // Asignar RIF al estado
           });
         })
         .catch(error => {
-          console.error('Error al obtener el proveedor:', error); // Manejo de errores en la obtención
+          console.error('Error al obtener el proveedor:', error);
         });
     }
-  }, [proveedor_id]); // Dependencia en proveedor_id, se ejecuta cuando cambia
+  }, [proveedor_id]);
 
-  // Función que se ejecuta cuando se envía el formulario
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+    e.preventDefault();
+
+    if (!usuarioId) {
+      alert('No se pudo obtener el ID del usuario. Por favor, inicia sesión de nuevo.');
+      return;
+    }
 
     try {
-      // Actualizamos el proveedor en la base de datos mediante una solicitud PUT
       await axios.put(`http://localhost:8000/proveedores/${proveedor_id}`, {
         nombre: proveedor.nombre,
         email: proveedor.email,
         telefono: proveedor.telefono,
-        direccion: proveedor.direccion
+        direccion: proveedor.direccion,
+        rif: proveedor.rif,  // Incluir RIF en la solicitud de actualización
+        usuario_id: usuarioId  // Incluyendo el usuario_id en la solicitud
       });
-      alert('Proveedor actualizado con éxito'); // Mensaje de éxito
-      router.push('/proveedores/consultar-proveedores'); // Redirigir a la lista de proveedores
+      alert('Proveedor actualizado con éxito');
+      router.push('/proveedores/consultar-proveedores');
     } catch (error) {
-      console.error('Error al actualizar el proveedor:', error.response?.data || error.message); // Manejo de errores
-      alert('Hubo un error al actualizar el proveedor'); // Mensaje de error
+      console.error('Error al actualizar el proveedor:', error.response?.data || error.message);
+      alert('Hubo un error al actualizar el proveedor');
     }
   };
 
   return (
     <div className={styles.container}>
-      <Sidebar /> {/* Barra lateral */}
+      <Sidebar />
       <div className={styles.mainContent}>
-        <Header /> {/* Cabecera */}
+        <Header />
         <div className="container mt-5">
-          <h2 className={styles.title}>Editar Proveedor</h2>
-          {/* Formulario para editar el proveedor */}
+          <h2 className={styles.title}>
+            <FontAwesomeIcon icon={faEdit} className={styles.titleIcon} />
+            Editar Proveedor
+          </h2>
           <form onSubmit={handleSubmit} className={styles.formContainer}>
             <div className="form-group">
-              <label>Nombre del Proveedor</label>
+              <label className={styles.boldLabel}>
+                <FontAwesomeIcon icon={faUser} className={styles.icon} /> Nombre del Proveedor
+              </label>
               <input
                 type="text"
                 className="form-control"
                 value={proveedor.nombre}
-                onChange={(e) => setProveedor({ ...proveedor, nombre: e.target.value })} // Actualiza el nombre
+                onChange={(e) => setProveedor({ ...proveedor, nombre: e.target.value })}
                 required
               />
             </div>
             <div className="form-group mt-3">
-              <label>Email</label>
+              <label className={styles.boldLabel}>
+                <FontAwesomeIcon icon={faEnvelope} className={styles.icon} /> Email
+              </label>
               <input
                 type="email"
                 className="form-control"
                 value={proveedor.email}
-                onChange={(e) => setProveedor({ ...proveedor, email: e.target.value })} // Actualiza el email
+                onChange={(e) => setProveedor({ ...proveedor, email: e.target.value })}
                 required
               />
             </div>
             <div className="form-group mt-3">
-              <label>Teléfono</label>
+              <label className={styles.boldLabel}>
+                <FontAwesomeIcon icon={faPhone} className={styles.icon} /> Teléfono
+              </label>
               <input
                 type="text"
                 className="form-control"
                 value={proveedor.telefono}
-                onChange={(e) => setProveedor({ ...proveedor, telefono: e.target.value })} // Actualiza el teléfono
+                onChange={(e) => setProveedor({ ...proveedor, telefono: e.target.value })}
                 required
               />
             </div>
             <div className="form-group mt-3">
-              <label>Dirección</label>
+              <label className={styles.boldLabel}>
+                <FontAwesomeIcon icon={faAddressCard} className={styles.icon} /> Dirección
+              </label>
               <textarea
                 className="form-control"
                 value={proveedor.direccion}
-                onChange={(e) => setProveedor({ ...proveedor, direccion: e.target.value })} // Actualiza la dirección
+                onChange={(e) => setProveedor({ ...proveedor, direccion: e.target.value })}
               />
             </div>
-            <button type="submit" className="btn btn-primary mt-4">Actualizar Proveedor</button> {/* Botón de envío */}
+            <div className="form-group mt-3">
+              <label className={styles.boldLabel}>
+                <FontAwesomeIcon icon={faIdCard} className={styles.icon} /> RIF
+              </label> {/* Nuevo campo para RIF */}
+              <input
+                type="text"
+                className="form-control"
+                value={proveedor.rif}
+                onChange={(e) => setProveedor({ ...proveedor, rif: e.target.value })}  // Actualiza el RIF
+                required
+              />
+            </div>
+            <button type="submit" className={`${styles.btnPrimary} btn mt-4`}>Actualizar Proveedor</button>
           </form>
         </div>
-        <Footer /> {/* Pie de página */}
+        <Footer />
       </div>
     </div>
   );
 };
 
-export default EditarProveedor; // Exportamos el componente
+export default EditarProveedor;
 
-  

@@ -1,191 +1,317 @@
-import React, { useState, useEffect } from 'react'; // Importación de React y Hooks
-import axios from 'axios'; // Librería para hacer peticiones HTTP
-import { useRouter } from 'next/router'; // Hook para redirección
-import Sidebar from '../../components/Sidebar'; // Componente de barra lateral
-import Header from '../../layouts/Header'; // Componente de cabecera
-import Footer from '../../layouts/Footer'; // Componente de pie de página
-import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap para estilos
-import styles from './styles/listar-salidas.module.css'; // Estilos locales
-import { Modal, Button, Table } from 'react-bootstrap'; // Componentes de Bootstrap para modales y tablas
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Sidebar from '../../components/Sidebar';
+import Header from '../../layouts/Header';
+import Footer from '../../layouts/Footer';
+import styles from './styles/listar-salidas.module.css';
+import { Table } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { Bar, Line } from 'react-chartjs-2';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    LineElement,
+    PointElement,
+    Title,
+    Tooltip,
+    Legend,
+    Filler  // Importar Filler para el fondo blanco
+} from 'chart.js';
 
-// Componente principal ListarSalidas
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    LineElement,
+    PointElement,
+    Title,
+    Tooltip,
+    Legend,
+    Filler  // Registrar Filler para el fondo blanco
+);
+
 const ListarSalidas = () => {
-    // Estado para manejar las salidas, carga, búsqueda y datos de pagos
-    const [salidas, setSalidas] = useState([]);
+    const [pedidosCompletados, setPedidosCompletados] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
-    const [showModalVerPago, setShowModalVerPago] = useState(false);
-    const [pagos, setPagos] = useState([]);
-    const [facturaActual, setFacturaActual] = useState(null);
-    const router = useRouter(); // Inicialización del hook para navegación
+    const [productosMasVendidos, setProductosMasVendidos] = useState({ labels: [], datasets: [] });
+    const [cantidadesVendidas, setCantidadesVendidas] = useState({ labels: [], datasets: [] });
 
-    // useEffect para obtener las salidas de inventario al cargar el componente
-    useEffect(() => {
-        axios.get('http://localhost:8000/salidas_inventario')
-            .then(response => {
-                const data = response.data;
-                // Consolidar salidas por factura_id
-                const salidasConsolidadas = data.reduce((acc, salida) => {
-                    if (!acc[salida.factura_id]) {
-                        acc[salida.factura_id] = {
-                            ...salida,
-                            cantidad_total: salida.cantidad,
-                            monto_total: salida.cantidad * salida.precio_venta
+    const fetchPedidosCompletados = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/pedidos/completados');
+            if (response.data && response.data.length > 0) {
+                const pedidosConDetalles = await Promise.all(response.data.map(async (pedido) => {
+                    const clienteResponse = await axios.get(`http://localhost:8000/clientes/${pedido.cliente_id}`);
+                    const detalles = await Promise.all(pedido.detalles.map(async (detalle) => {
+                        const productoResponse = await axios.get(`http://localhost:8000/productos/${detalle.producto_id}`);
+                        return {
+                            ...detalle,
+                            producto_nombre: productoResponse.data.nombre || 'N/A'
                         };
-                    } else {
-                        acc[salida.factura_id].cantidad_total += salida.cantidad;
-                        acc[salida.factura_id].monto_total += salida.cantidad * salida.precio_venta;
+                    }));
+                    return {
+                        ...pedido,
+                        cliente_nombre: clienteResponse.data.nombre || 'N/A',
+                        detalles: detalles
+                    };
+                }));
+                setPedidosCompletados(pedidosConDetalles);
+                setLoading(false);
+                console.log(pedidosConDetalles); // Verifica en la consola del navegador si se obtienen correctamente
+            }
+        } catch (error) {
+            console.error('Error al obtener pedidos completados:', error);
+            setLoading(false);
+        }
+    };
+
+    const fetchProductosMasVendidos = async () => {
+        try {
+            const result = await axios.get('http://localhost:8000/salidas_inventario/productos_mas_vendidos_desde_pedidos');
+            const labels = result.data.map(item => item.producto);
+            const quantities = result.data.map(item => item.total_vendidos);
+
+            setProductosMasVendidos({
+                labels,
+                datasets: [
+                    {
+                        label: 'Productos Más Vendidos',
+                        data: quantities,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
                     }
-                    return acc;
-                }, {});
-
-                // Convertir el objeto en array para renderizado
-                setSalidas(Object.values(salidasConsolidadas));
-                setLoading(false); // Cambiar estado de carga
-            })
-            .catch(error => {
-                console.error('Error al obtener salidas:', error); // Manejo de errores
-                setLoading(false); // Cambiar estado de carga
+                ]
             });
-    }, []); // Este efecto se ejecuta solo una vez al montar el componente
-
-    // Función para mostrar el modal de ver pago
-    const handleShowVerPago = (factura) => {
-        setFacturaActual(factura); // Establecer la factura actual
-        axios.get(`http://localhost:8000/facturas/${factura.factura_id}/pagos`)
-            .then(response => {
-                setPagos(response.data); // Establecer los pagos para la factura
-                setShowModalVerPago(true); // Mostrar el modal
-            })
-            .catch(error => {
-                console.error('Error al obtener los pagos de la factura:', error); // Manejo de errores
-            });
+        } catch (error) {
+            console.error('Error al obtener productos más vendidos:', error);
+        }
     };
 
-    // Función para cerrar el modal de ver pago
-    const handleCloseVerPago = () => {
-        setShowModalVerPago(false); // Ocultar el modal
-        setPagos([]); // Limpiar pagos
-        setFacturaActual(null); // Limpiar factura actual
+    const fetchCantidadesVendidas = async () => {
+        try {
+            const result = await axios.get('http://localhost:8000/salidas_inventario/cantidades_vendidas_desde_pedidos');
+            const labels = result.data.map(item => item.fecha);
+            const quantities = result.data.map(item => item.cantidad);
+
+            setCantidadesVendidas({
+                labels,
+                datasets: [
+                    {
+                        label: 'Cantidades Vendidas',
+                        data: quantities,
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1,
+                    }
+                ]
+            });
+        } catch (error) {
+            console.error('Error al obtener cantidades vendidas:', error);
+        }
     };
 
-    // Función para manejar el input de búsqueda
+    useEffect(() => {
+        fetchPedidosCompletados();
+        fetchProductosMasVendidos();
+        fetchCantidadesVendidas();
+    }, []);
+
     const handleSearch = (e) => {
-        setSearch(e.target.value); // Establecer el valor de búsqueda
+        setSearch(e.target.value);
     };
 
-    // Función para redirigir a la página de nueva factura
-    const handleNuevaFactura = () => {
-        router.push('/existencias/nueva-factura-form'); // Redirigir a nueva factura
-    };
-
-    // Filtrar las salidas por número de factura
-    const filteredSalidas = salidas.filter(salida => 
-        (salida.factura ? salida.factura.numero_factura.toLowerCase() : '').includes(search.toLowerCase())
+    const filteredPedidos = pedidosCompletados.filter(pedido => 
+        pedido.cliente_nombre.toLowerCase().includes(search.toLowerCase()) ||
+        pedido.pedido_id.toString().includes(search.toLowerCase())
     );
+
+    const optionsBar = {
+        responsive: true,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Productos Más Vendidos',
+                font: {
+                    size: 20  // Títulos más grandes
+                },
+                color: '#000000',  // Título en color negro
+                padding: {
+                    top: 10,  // Reducir el espacio superior del título
+                    bottom: 10  // Reducir el espacio inferior del título
+                }
+            },
+            legend: {
+                labels: {
+                    font: {
+                        size: 12  // Tamaño de las etiquetas de la leyenda
+                    }
+                }
+            },
+            tooltip: {
+                backgroundColor: '#ffffff',  // Fondo blanco para los tooltips
+                titleColor: '#000000',
+                bodyColor: '#000000',
+                borderColor: '#cccccc',
+                borderWidth: 1
+            }
+        },
+        layout: {
+            padding: {
+                top: 0,  // Reducir el padding superior
+                bottom: 0  // Reducir el padding inferior
+            }
+        },
+        scales: {
+            x: {
+                ticks: {
+                    color: '#000000',
+                    padding: 10  // Espacio entre los números y el borde
+                },
+                grid: {
+                    display: false
+                }
+            },
+            y: {
+                ticks: {
+                    color: '#000000',
+                    padding: 10  // Espacio entre los números y el borde
+                },
+                grid: {
+                    color: '#e0e0e0'
+                }
+            }
+        }
+    };
+
+    const optionsLine = {
+        responsive: true,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Cantidades Vendidas',
+                font: {
+                    size: 20  // Títulos más grandes
+                },
+                color: '#000000',  // Título en color negro
+                padding: {
+                    top: 10,  // Reducir el espacio superior del título
+                    bottom: 10  // Reducir el espacio inferior del título
+                }
+            },
+            legend: {
+                labels: {
+                    font: {
+                        size: 12  // Tamaño de las etiquetas de la leyenda
+                    }
+                }
+            },
+            tooltip: {
+                backgroundColor: '#ffffff',  // Fondo blanco para los tooltips
+                titleColor: '#000000',
+                bodyColor: '#000000',
+                borderColor: '#cccccc',
+                borderWidth: 1
+            }
+        },
+        layout: {
+            padding: {
+                top: 0,  // Reducir el padding superior
+                bottom: 0  // Reducir el padding inferior
+            }
+        },
+        scales: {
+            x: {
+                ticks: {
+                    color: '#000000',
+                    padding: 10  // Espacio entre los números y el borde
+                },
+                grid: {
+                    display: false
+                }
+            },
+            y: {
+                ticks: {
+                    color: '#000000',
+                    padding: 10  // Espacio entre los números y el borde
+                },
+                grid: {
+                    color: '#e0e0e0'
+                }
+            }
+        }
+    };
 
     return (
         <div className={styles.container}>
-            <Sidebar /> {/* Barra lateral */}
+            <Sidebar />
             <div className={styles.mainContent}>
-                <Header /> {/* Cabecera */}
-                <div className="container mt-5">
-                    <div className="d-flex justify-content-between align-items-center mb-4">
-                        <h2 className={styles.title}>Listado de Salidas de Inventario</h2>
-                        <button className="btn btn-primary" onClick={handleNuevaFactura}>Nueva Factura</button> {/* Botón para nueva factura */}
+                <Header />
+                <div className={`container ${styles.contentWrapper}`}>
+                    <h2 className={styles.title}>Salidas de Inventario</h2>
+                    <div className={`${styles.searchContainer} d-flex justify-content-center`}>
+                        <div className="input-group mb-4" style={{ maxWidth: '600px' }}>
+                            <span className="input-group-text bg-primary text-white">
+                                <FontAwesomeIcon icon={faSearch} />
+                            </span>
+                            <input 
+                                type="text" 
+                                className={`form-control ${styles.searchInput}`} 
+                                placeholder="Buscar por cliente o número de pedido" 
+                                value={search}
+                                onChange={handleSearch}
+                            />
+                        </div>
                     </div>
-                    <input
-                        type="text"
-                        placeholder="Buscar por número de factura"
-                        value={search}
-                        onChange={handleSearch} // Llamada a función de búsqueda
-                        className="form-control mb-3" // Estilo de bootstrap
-                    />
                     {loading ? (
-                        <p>Cargando...</p> // Mensaje mientras se cargan los datos
+                        <p className={styles.loadingText}>Cargando pedidos completados...</p>
                     ) : (
-                        <table className="table table-striped mt-4">
+                        <Table striped bordered hover className={styles.customTable}>
                             <thead>
                                 <tr>
-                                    <th>Facturación</th>
-                                    <th>Fecha</th>
+                                    <th>Pedido ID</th>
                                     <th>Cliente</th>
-                                    <th>Monto Total</th>
-                                    <th>Pagado</th>
-                                    <th>Debido</th>
-                                    <th>Vendido Por</th>
-                                    <th>Opciones</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio de Venta</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredSalidas.map((salida, index) => (
-                                    <tr key={index}>
-                                        <td>{salida.factura ? salida.factura.numero_factura : 'No disponible'}</td>
-                                        <td>{new Date(salida.fecha).toLocaleDateString()}</td>
-                                        <td>{salida.cliente ? salida.cliente.nombre : 'No disponible'}</td>
-                                        <td>{salida.monto_total.toFixed(2)}</td>
-                                        <td>{salida.factura ? salida.factura.pagado : 'No disponible'}</td>
-                                        <td>{salida.factura ? salida.factura.debido : 'No disponible'}</td>
-                                        <td>{salida.vendedor ? salida.vendedor.nombre : 'No disponible'}</td>
-                                        <td>
-                                            {/* Botones para ver pago, abonar, editar, eliminar, imprimir */}
-                                            <button className="btn btn-sm btn-info mr-2" onClick={() => handleShowVerPago(salida.factura)}>Ver Pago</button>
-                                            <button className="btn btn-sm btn-warning mr-2">Abonar</button>
-                                            <button className="btn btn-sm btn-success mr-2">Editar</button>
-                                            <button className="btn btn-sm btn-danger mr-2">Eliminar</button>
-                                            <button className="btn btn-sm btn-secondary" onClick={() => handlePrint(salida.factura.factura_id, salida.factura.numero_factura)}>Imprimir</button>
-                                        </td>
-                                    </tr>
-                                ))}
+                                {filteredPedidos.map(pedido => 
+                                    pedido.detalles.map(detalle => (
+                                        <tr key={`${pedido.pedido_id}-${detalle.detalle_id}`}>
+                                            <td>{pedido.pedido_id}</td>
+                                            <td>{pedido.cliente_nombre}</td>
+                                            <td>{new Date(pedido.fecha_pedido).toLocaleDateString()}</td>
+                                            <td>{pedido.estado}</td>
+                                            <td>{detalle.producto_nombre || 'N/A'}</td>
+                                            <td>{detalle.cantidad}</td>
+                                            <td>{(detalle.cantidad * detalle.precio_unitario).toFixed(2)}</td>
+                                        </tr>
+                                    ))
+                                )}
                             </tbody>
-                        </table>
+                        </Table>
                     )}
-                </div>
-                <Footer /> {/* Pie de página */}
-            </div>
-            {/* Modal de Ver Pago */}
-            <Modal show={showModalVerPago} onHide={handleCloseVerPago}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Pago de factura Nº: {facturaActual?.numero_factura}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <p>Cliente: {facturaActual?.cliente?.nombre}</p>
-                    <Table striped bordered hover>
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Importe</th>
-                                <th>Método de Pago</th>
-                                <th>Recibido por</th>
-                                <th>Eliminar</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {pagos.map((pago) => (
-                                <tr key={pago.pago_id}>
-                                    <td>{new Date(pago.fecha).toLocaleDateString()}</td>
-                                    <td>{pago.monto}</td>
-                                    <td>{pago.metodo_pago}</td>
-                                    <td>Recibido por [Nombre del Usuario] {/* Reemplazar con el nombre del usuario que recibió el pago */}</td>
-                                    <td><Button variant="danger" size="sm">Eliminar</Button></td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table>
-                    <div>
-                        <p>Total a pagar: {facturaActual?.monto_total}</p>
-                        <p>Total pagado: [Valor Calculado] {/* Calcular y mostrar el total pagado */}</p>
-                        <p>Importe total a pagar: [Valor Calculado] {/* Calcular y mostrar la diferencia entre el total a pagar y el total pagado */}</p>
+                    <div className={`${styles.graficasContainer}`}>
+                        <div className={styles.grafica}>
+                            <Bar id="bar-chart" data={productosMasVendidos} options={optionsBar} />
+                        </div>
+                        <div className={styles.grafica}>
+                            <Line id="line-chart" data={cantidadesVendidas} options={optionsLine} />
+                        </div>
                     </div>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseVerPago}>Cerrar</Button>
-                </Modal.Footer>
-            </Modal>
+                </div>
+                <Footer />
+            </div>
         </div>
     );
 };
 
-export default ListarSalidas; // Exportar el componente
-
-
+export default ListarSalidas;

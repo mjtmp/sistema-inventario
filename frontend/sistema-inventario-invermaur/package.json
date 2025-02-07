@@ -9,19 +9,29 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.7.1",
+    "@fortawesome/free-solid-svg-icons": "^6.7.1",
+    "@fortawesome/react-fontawesome": "^0.2.2",
+    "@react-pdf/renderer": "^4.1.6",
     "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.6",
+    "chartjs-plugin-datalabels": "^2.2.0",
     "jspdf": "^2.5.2",
     "jspdf-autotable": "^3.8.4",
+    "jwt-decode": "^4.0.0",
     "mini-css-extract-plugin": "^2.9.1",
     "next": "^15.0.2",
+    "plotly.js": "^2.35.3",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.5",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "react-paginate": "^8.2.0",
-    "react-select": "^5.8.3"
+    "react-plotly.js": "^2.6.0",
+    "react-select": "^5.8.3",
+    "sweetalert2": "^11.6.13",
+    "sweetalert2-react-content": "^5.1.0"
   },
   "devDependencies": {
     "@types/node": "^20",

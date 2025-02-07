@@ -1,60 +1,70 @@
-from fastapi import APIRouter, Depends, HTTPException  # Importamos las dependencias de FastAPI.
-from sqlalchemy.orm import Session  # Importamos Session para acceder a la base de datos.
-from models.models import Cliente  # Importamos el modelo Cliente.
-from crud.clientes import get_cliente, get_clientes, create_cliente, update_cliente, delete_cliente  # Importamos las funciones del CRUD.
-from schemas.clientes import Cliente as ClienteSchema, ClienteCreate, ClienteUpdate  # Importamos los esquemas de datos.
-from database import SessionLocal  # Importamos la sesión de base de datos local.
-from typing import List  # Importamos List para especificar que devolveremos una lista.
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from models.models import Cliente
+from crud.clientes import get_cliente, get_clientes, create_cliente, update_cliente, delete_cliente, numero_documento_existe
+from schemas.clientes import Cliente as ClienteSchema, ClienteCreate, ClienteUpdate
+from database import SessionLocal
+from typing import List
+from sqlalchemy import func
 
-router = APIRouter()  # Creamos el enrutador de FastAPI.
+router = APIRouter()
 
-# Función para obtener la base de datos.
 def get_db():
-    db = SessionLocal()  # Creamos una nueva sesión para interactuar con la base de datos.
+    db = SessionLocal()
     try:
-        yield db  # Retornamos la sesión para usarla en las rutas.
+        yield db
     finally:
-        db.close()  # Cerramos la sesión al finalizar.
+        db.close()
 
-# Ruta para crear un nuevo cliente.
 @router.post("/", response_model=ClienteSchema)
 def crear_cliente(cliente: ClienteCreate, db: Session = Depends(get_db)):
-    return create_cliente(db=db, cliente=cliente)  # Llamamos a la función de CRUD para crear el cliente.
+    try:
+        return create_cliente(db=db, cliente=cliente, usuario_id=cliente.usuario_id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
-# Ruta para listar los clientes con paginación.
 @router.get("/", response_model=dict)
 def listar_clientes(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    clientes, total = get_clientes(db=db, skip=skip, limit=limit)  # Obtenemos los clientes con la función CRUD.
-    return {"clientes": [ClienteSchema(**cliente.to_dict()) for cliente in clientes], "total": total}  # Retornamos los clientes y el total.
+    clientes, total = get_clientes(db=db, skip=skip, limit=limit)
+    return {"clientes": [ClienteSchema(**cliente.to_dict()) for cliente in clientes], "total": total}
 
-# Ruta para listar los clientes que coincidan con un nombre.
+@router.get("/total", response_model=dict)
+def total_clientes(db: Session = Depends(get_db)):
+    total = db.query(func.count(Cliente.cliente_id)).scalar()
+    return {"total": total}
+
 @router.get("/search", response_model=List[ClienteSchema])
 def listar_clientes_por_nombre(nombre: str = "", db: Session = Depends(get_db)):
-    if nombre:  # Si se pasa un nombre, filtramos los clientes.
-        return db.query(Cliente).filter(Cliente.nombre.ilike(f"%{nombre}%")).all()  # Realizamos la consulta en la base de datos.
-    return db.query(Cliente).all()  # Si no se pasa nombre, retornamos todos los clientes.
+    if nombre:
+        return db.query(Cliente).filter(Cliente.nombre.ilike(f"%{nombre}%")).all()
+    return db.query(Cliente).all()
 
-# Ruta para obtener un cliente específico por su ID.
+@router.get("/buscar-por-documento", response_model=List[ClienteSchema])
+def buscar_cliente_por_documento(numero_documento: str, db: Session = Depends(get_db)):
+    if numero_documento:
+        return db.query(Cliente).filter(Cliente.numero_documento == numero_documento).all()
+    return []
+
 @router.get("/{cliente_id}", response_model=ClienteSchema)
 def obtener_cliente(cliente_id: int, db: Session = Depends(get_db)):
-    db_cliente = get_cliente(db=db, cliente_id=cliente_id)  # Buscamos el cliente por ID.
-    if db_cliente is None:  # Si no se encuentra el cliente.
-        raise HTTPException(status_code=404, detail="Cliente no encontrado")  # Lanzamos una excepción 404.
-    return db_cliente  # Retornamos el cliente encontrado.
+    db_cliente = get_cliente(db=db, cliente_id=cliente_id)
+    if db_cliente is None:
+        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+    return db_cliente
 
-# Ruta para actualizar un cliente específico por su ID.
 @router.put("/{cliente_id}", response_model=ClienteSchema)
 def actualizar_cliente(cliente_id: int, cliente: ClienteUpdate, db: Session = Depends(get_db)):
-    db_cliente = update_cliente(db=db, cliente_id=cliente_id, cliente=cliente)  # Llamamos a la función CRUD para actualizar.
-    if db_cliente is None:  # Si no se encuentra el cliente.
-        raise HTTPException(status_code=404, detail="Cliente no encontrado")  # Lanzamos una excepción 404.
-    return db_cliente  # Retornamos el cliente actualizado.
+    try:
+        return update_cliente(db=db, cliente_id=cliente_id, cliente=cliente, usuario_id=cliente.usuario_id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
-# Ruta para eliminar un cliente específico por su ID.
 @router.delete("/{cliente_id}", response_model=ClienteSchema)
-def eliminar_cliente(cliente_id: int, db: Session = Depends(get_db)):
-    db_cliente = delete_cliente(db=db, cliente_id=cliente_id)  # Llamamos a la función CRUD para eliminar.
-    if db_cliente is None:  # Si no se encuentra el cliente.
-        raise HTTPException(status_code=404, detail="Cliente no encontrado")  # Lanzamos una excepción 404.
-    return db_cliente  # Retornamos el cliente eliminado.
+def eliminar_cliente(cliente_id: int, usuario_id: int, db: Session = Depends(get_db)):
+    db_cliente = delete_cliente(db=db, cliente_id=cliente_id, usuario_id=usuario_id)
+    if db_cliente is None:
+        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+    return db_cliente
+
+
 

@@ -1,77 +1,102 @@
-// Importación de dependencias y componentes necesarios
-import React, { useState, useEffect } from 'react'; // useState y useEffect son hooks de React
-import axios from 'axios'; // Axios para realizar peticiones HTTP
-import 'bootstrap/dist/css/bootstrap.min.css'; // Estilos de Bootstrap para el diseño
-import Sidebar from '../../components/Sidebar'; // Sidebar componente
-import Header from '../../layouts/Header'; // Header del sitio
-import Footer from '../../layouts/Footer'; // Footer del sitio
-import styles from './styles/editar-cliente.module.css'; // Estilos personalizados para este componente
-import { useRouter } from 'next/router'; // useRouter para manejar rutas de Next.js
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Sidebar from '../../components/Sidebar';
+import Header from '../../layouts/Header';
+import Footer from '../../layouts/Footer';
+import styles from './styles/editar-cliente.module.css';
+import { useRouter } from 'next/router';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faEnvelope, faPhone, faAddressCard, faIdCard, faEdit } from '@fortawesome/free-solid-svg-icons';
 
 const EditarCliente = () => {
-  // Obtiene el parametro cliente_id desde la URL
   const router = useRouter();
   const { cliente_id } = router.query;
 
-  // Estado para almacenar la información del cliente
   const [cliente, setCliente] = useState({
     nombre: '',
     email: '',
     telefono: '',
-    direccion: ''
+    direccion: '',
+    tipo_documento: '',  // Nuevo estado para tipo de documento
+    numero_documento: ''  // Nuevo estado para número de documento
   });
+  const [usuarioId, setUsuarioId] = useState(null);
 
-  // Hook de efecto para obtener la información del cliente desde el backend
   useEffect(() => {
+    const userId = localStorage.getItem('usuario_id'); // Obtener el usuario_id del almacenamiento local
+    setUsuarioId(userId);
+
     if (cliente_id) {
-      axios.get(`http://localhost:8000/clientes/${cliente_id}`) // Se hace una solicitud GET al backend
+      axios.get(`http://localhost:8000/clientes/${cliente_id}`)
         .then(response => {
-          // Al recibir la respuesta, se establece el estado del cliente con los datos obtenidos
-          const { nombre, email, telefono, direccion } = response.data;
+          const { nombre, email, telefono, direccion, tipo_documento, numero_documento } = response.data;
           setCliente({
             nombre,
             email,
             telefono,
-            direccion
+            direccion,
+            tipo_documento,
+            numero_documento
           });
         })
         .catch(error => {
-          console.error('Error al obtener el cliente:', error); // Manejo de errores
+          console.error('Error al obtener el cliente:', error);
         });
     }
-  }, [cliente_id]); // Este efecto solo se ejecuta cuando el cliente_id cambia
+  }, [cliente_id]);
 
-  // Función para manejar el formulario de edición
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevenir comportamiento por defecto del formulario
+    e.preventDefault();
+
+    if (!usuarioId) {
+      alert('No se pudo obtener el ID del usuario. Por favor, inicia sesión de nuevo.');
+      return;
+    }
+
+    console.log('Usuario ID:', usuarioId); // Verificar usuario_id
+    console.log('Datos a enviar:', {
+      nombre: cliente.nombre,
+      email: cliente.email,
+      telefono: cliente.telefono,
+      direccion: cliente.direccion,
+      tipo_documento: cliente.tipo_documento,
+      numero_documento: cliente.numero_documento,
+      usuario_id: usuarioId
+    }); // Verificar los datos que se enviarán
 
     try {
-      // Se realiza una solicitud PUT para actualizar el cliente en el backend
       await axios.put(`http://localhost:8000/clientes/${cliente_id}`, {
         nombre: cliente.nombre,
         email: cliente.email,
         telefono: cliente.telefono,
-        direccion: cliente.direccion
+        direccion: cliente.direccion,
+        tipo_documento: cliente.tipo_documento,
+        numero_documento: cliente.numero_documento,
+        usuario_id: usuarioId // Incluyendo el usuario_id en la solicitud
       });
-      alert('Cliente actualizado con éxito'); // Mensaje de éxito
-      router.push('/clientes/consultar-clientes'); // Redirige a la página de clientes después de la actualización
+      alert('Cliente actualizado con éxito');
+      router.push('/clientes/consultar-clientes');
     } catch (error) {
       console.error('Error al actualizar el cliente:', error.response?.data || error.message);
-      alert('Hubo un error al actualizar el cliente'); // Mensaje de error si algo falla
+      alert('Hubo un error al actualizar el cliente');
     }
   };
 
   return (
     <div className={styles.container}>
-      <Sidebar /> {/* Componente del sidebar */}
+      <Sidebar />
       <div className={styles.mainContent}>
-        <Header /> {/* Componente del header */}
+        <Header />
         <div className="container mt-5">
-          <h2 className={styles.title}>Editar Cliente</h2>
+          <h2 className={styles.title}>
+            <FontAwesomeIcon icon={faEdit} className={styles.titleIcon} />Editar Cliente
+          </h2>
           <form onSubmit={handleSubmit} className={styles.formContainer}>
-            {/* Campos del formulario para editar los datos del cliente */}
             <div className="form-group">
-              <label>Nombre del Cliente</label>
+              <label className={styles.boldLabel}>
+                <FontAwesomeIcon icon={faUser} className={styles.icon} />Nombre del Cliente
+              </label>
               <input
                 type="text"
                 className="form-control"
@@ -81,7 +106,9 @@ const EditarCliente = () => {
               />
             </div>
             <div className="form-group mt-3">
-              <label>Email</label>
+              <label className={styles.boldLabel}>
+                <FontAwesomeIcon icon={faEnvelope} className={styles.icon} />Email
+              </label>
               <input
                 type="email"
                 className="form-control"
@@ -91,7 +118,9 @@ const EditarCliente = () => {
               />
             </div>
             <div className="form-group mt-3">
-              <label>Teléfono</label>
+              <label className={styles.boldLabel}>
+                <FontAwesomeIcon icon={faPhone} className={styles.icon} />Teléfono
+              </label>
               <input
                 type="text"
                 className="form-control"
@@ -101,21 +130,54 @@ const EditarCliente = () => {
               />
             </div>
             <div className="form-group mt-3">
-              <label>Dirección</label>
+              <label className={styles.boldLabel}>
+                <FontAwesomeIcon icon={faAddressCard} className={styles.icon} />Dirección
+              </label>
               <textarea
                 className="form-control"
                 value={cliente.direccion}
                 onChange={(e) => setCliente({ ...cliente, direccion: e.target.value })}
               />
             </div>
-            <button type="submit" className="btn btn-primary mt-4">Actualizar Cliente</button> {/* Botón de envío */}
+            <div className="form-group mt-3">
+              <label className={styles.boldLabel}>
+                <FontAwesomeIcon icon={faIdCard} className={styles.icon} />Tipo de Documento
+              </label> {/* Nuevo campo tipo de documento */}
+              <select
+                className="form-control"
+                value={cliente.tipo_documento}
+                onChange={(e) => setCliente({ ...cliente, tipo_documento: e.target.value })}
+                required
+              >
+                <option value="">Selecciona un tipo de documento</option>
+                <option value="CV">Cédula Venezolana</option>
+                <option value="CE">Cédula Extranjera</option>
+                <option value="PAS">Pasaporte</option>
+                <option value="RIF-N">RIF - Personal Natural</option>
+                <option value="RIF-J">RIF - Persona Juridica</option>
+                <option value="RIF-E">RIF - E</option>
+              </select>
+            </div>
+            <div className="form-group mt-3">
+              <label className={styles.boldLabel}>
+                <FontAwesomeIcon icon={faIdCard} className={styles.icon} />Número de Documento
+              </label> {/* Nuevo campo número de documento */}
+              <input
+                type="text"
+                className="form-control"
+                value={cliente.numero_documento}
+                onChange={(e) => setCliente({ ...cliente, numero_documento: e.target.value })}
+                required
+              />
+            </div>
+            <button type="submit" className={`${styles.btnPrimary} btn mt-4`}>Actualizar Cliente</button>
           </form>
         </div>
-        <Footer /> {/* Componente del footer */}
+        <Footer />
       </div>
     </div>
   );
 };
 
-export default EditarCliente; // Exporta el componente para su uso en otras partes de la aplicación
+export default EditarCliente;
 

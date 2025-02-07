@@ -10,7 +10,7 @@ class ReporteEntregaBase(BaseModel):
 
 # Esquema para la creación de un reporte de entrega
 class ReporteEntregaCreate(ReporteEntregaBase):
-    pass  # Hereda todos los campos de ReporteEntregaBase
+    usuario_id: int  # Hereda todos los campos de ReporteEntregaBase
 
 # Esquema para la actualización de un reporte de entrega
 class ReporteEntregaUpdate(BaseModel):
@@ -23,4 +23,3 @@ class ReporteEntrega(ReporteEntregaBase):
 
     class Config:
         from_attributes = True  # Permite convertir desde objetos SQLAlchemy
-

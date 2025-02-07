@@ -1,161 +1,113 @@
-from typing import List  # Importa para especificar listas en tipos de retorno
-from fastapi import APIRouter, Depends, HTTPException  # Importaciones necesarias para rutas en FastAPI
-from sqlalchemy.orm import Session  # Para manejar la sesión de la base de datos
-from crud.pedidos import (  # Importa las funciones CRUD relacionadas con `Pedido`
-    get_pedido, get_pedidos, create_pedido, update_pedido, delete_pedido
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from models.models import Pedido
+from crud.pedidos import (
+    get_pedido, get_pedidos, create_pedido, update_pedido, delete_pedido, get_pedidos_completados
 )
-from schemas.pedidos import Pedido, PedidoCreate, PedidoUpdate  # Esquemas para los datos de entrada/salida
-from database import SessionLocal  # Configuración de la conexión a la base de datos
-import logging  # Para registrar eventos y errores
+from schemas.pedidos import Pedido as PedidoSchema, PedidoCreate, PedidoUpdate
+from database import SessionLocal
+from typing import List, Optional
+from sqlalchemy import func
+from fastapi.responses import FileResponse
+from utils.generar_pedido import generar_pedido, generate_unique_order_number
 
-# Inicializa un enrutador para el módulo de pedidos
 router = APIRouter()
 
-# Función para obtener la sesión de la base de datos
 def get_db():
     db = SessionLocal()
     try:
-        yield db  # Devuelve la sesión para cada solicitud
+        yield db
     finally:
-        db.close()  # Asegura que la sesión se cierra después de usarla
+        db.close()
 
-# Configuración de logging
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
+@router.get("/completados", response_model=List[PedidoSchema])
+def listar_pedidos_completados(db: Session = Depends(get_db)):
+    pedidos = get_pedidos_completados(db)
+    return pedidos
 
 # Ruta para crear un pedido
-@router.post("/", response_model=Pedido)
+@router.post("/", response_model=PedidoSchema)
 def crear_pedido(pedido: PedidoCreate, db: Session = Depends(get_db)):
     try:
-        logger.debug("Datos recibidos para crear pedido: %s", pedido)  # Registro de datos de entrada
-        return create_pedido(db=db, pedido=pedido)
-    except Exception as e:
-        logger.error(f"Error al crear pedido: {str(e)}")  # Registro de errores
-        raise HTTPException(status_code=422, detail="Error al crear pedido")
+        return create_pedido(db=db, pedido=pedido, usuario_id=pedido.usuario_id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
-# Ruta para listar pedidos con soporte de paginación
-@router.get("/", response_model=List[Pedido])
+# Ruta para listar pedidos con paginación
+@router.get("/", response_model=dict)
 def listar_pedidos(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    return get_pedidos(db=db, skip=skip, limit=limit)
+    pedidos, total = get_pedidos(db=db, skip=skip, limit=limit)
+    return {"pedidos": [PedidoSchema(**pedido.to_dict()) for pedido in pedidos], "total": total}
 
-# Ruta para obtener un pedido por su ID
-@router.get("/{pedido_id}", response_model=Pedido)
-def obtener_pedido(pedido_id: int, db: Session = Depends(get_db)):
-    db_pedido = get_pedido(db=db, pedido_id=pedido_id)
-    if db_pedido is None:
-        raise HTTPException(status_code=404, detail="Pedido no encontrado")  # Error si no existe
-    return db_pedido
+@router.get("/pendientes/total", response_model=dict)
+def total_pedidos_pendientes(db: Session = Depends(get_db)):
+    total = db.query(func.count(Pedido.pedido_id)).filter(Pedido.estado == 'pendiente').scalar()
+    return {"total": total}
 
-# Ruta para actualizar un pedido existente
-@router.put("/{pedido_id}", response_model=Pedido)
-def actualizar_pedido(pedido_id: int, pedido: PedidoUpdate, db: Session = Depends(get_db)):
-    db_pedido = update_pedido(db=db, pedido_id=pedido_id, pedido=pedido)
-    if db_pedido is None:
-        raise HTTPException(status_code=404, detail="Pedido no encontrado")
-    return db_pedido
+@router.get("/entregados/total", response_model=dict)
+def total_pedidos_entregados(db: Session = Depends(get_db)):
+    total = db.query(func.count(Pedido.pedido_id)).filter(Pedido.estado == 'completado').scalar()
+    return {"total": total}
 
-# Ruta para eliminar un pedido por su ID
-@router.delete("/{pedido_id}", response_model=Pedido)
-def eliminar_pedido(pedido_id: int, db: Session = Depends(get_db)):
-    db_pedido = delete_pedido(db=db, pedido_id=pedido_id)
-    if db_pedido is None:
-        raise HTTPException(status_code=404, detail="Pedido no encontrado")
-    return db_pedido
-
-
-
-'''from typing import List
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from crud.pedidos import get_pedido, get_pedidos, create_pedido, update_pedido, delete_pedido
-from schemas.pedidos import Pedido, PedidoCreate, PedidoUpdate
-from database import SessionLocal
-
-router = APIRouter()
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-@router.post("/", response_model=Pedido)
-def crear_pedido(pedido: PedidoCreate, db: Session = Depends(get_db)):
-    return create_pedido(db=db, pedido=pedido)
-
-@router.get("/", response_model=List[Pedido])
-def listar_pedidos(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    return get_pedidos(db=db, skip=skip, limit=limit)
-
-@router.get("/{pedido_id}", response_model=Pedido)
+@router.get("/{pedido_id}", response_model=PedidoSchema)
 def obtener_pedido(pedido_id: int, db: Session = Depends(get_db)):
     db_pedido = get_pedido(db=db, pedido_id=pedido_id)
     if db_pedido is None:
         raise HTTPException(status_code=404, detail="Pedido no encontrado")
     return db_pedido
 
-@router.put("/{pedido_id}", response_model=Pedido)
+@router.put("/{pedido_id}", response_model=PedidoSchema)
 def actualizar_pedido(pedido_id: int, pedido: PedidoUpdate, db: Session = Depends(get_db)):
-    db_pedido = update_pedido(db=db, pedido_id=pedido_id, pedido=pedido)
+    db_pedido = update_pedido(db=db, pedido_id=pedido_id, pedido=pedido, usuario_id=pedido.usuario_id)
     if db_pedido is None:
         raise HTTPException(status_code=404, detail="Pedido no encontrado")
     return db_pedido
 
-@router.delete("/{pedido_id}", response_model=Pedido)
-def eliminar_pedido(pedido_id: int, db: Session = Depends(get_db)):
-    db_pedido = delete_pedido(db=db, pedido_id=pedido_id)
+@router.delete("/{pedido_id}", response_model=PedidoSchema)
+def eliminar_pedido(pedido_id: int, usuario_id: int, db: Session = Depends(get_db)):
+    db_pedido = delete_pedido(db=db, pedido_id=pedido_id, usuario_id=usuario_id)
     if db_pedido is None:
         raise HTTPException(status_code=404, detail="Pedido no encontrado")
-    return db_pedido'''
+    return db_pedido
 
-
-'''from typing import List
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from crud.pedidos import get_pedido, get_pedidos, create_pedido, update_pedido, delete_pedido, crear_pedido
-from schemas.pedidos import Pedido, PedidoCreate, PedidoUpdate
-from database import SessionLocal
-
-router = APIRouter()
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-@router.post("/", response_model=Pedido)
-def crear_pedido(pedido: PedidoCreate, db: Session = Depends(get_db)):
-    return create_pedido(db=db, pedido=pedido)
-
-@router.post("/nuevo", response_model=Pedido)
-def crear_pedido_nuevo(cliente_id: int, db: Session = Depends(get_db)):
-    return crear_pedido(db, cliente_id)
-
-@router.get("/", response_model=List[Pedido])
-def listar_pedidos(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    return get_pedidos(db=db, skip=skip, limit=limit)
-
-@router.get("/{pedido_id}", response_model=Pedido)
-def obtener_pedido(pedido_id: int, db: Session = Depends(get_db)):
+# Ruta para generar el PDF de un pedido
+@router.get("/{pedido_id}/generate_pdf", response_class=FileResponse)
+def generar_pdf_pedido(pedido_id: int, db: Session = Depends(get_db)):
     db_pedido = get_pedido(db=db, pedido_id=pedido_id)
     if db_pedido is None:
         raise HTTPException(status_code=404, detail="Pedido no encontrado")
-    return db_pedido
+    
+    cliente = {
+        "nombre": db_pedido.cliente.nombre,
+        "telefono": db_pedido.cliente.telefono,
+        "email": db_pedido.cliente.email,
+        "direccion": db_pedido.cliente.direccion
+    }
 
-@router.put("/{pedido_id}", response_model=Pedido)
-def actualizar_pedido(pedido_id: int, pedido: PedidoUpdate, db: Session = Depends(get_db)):
-    db_pedido = update_pedido(db=db, pedido_id=pedido_id, pedido=pedido)
-    if db_pedido is None:
-        raise HTTPException(status_code=404, detail="Pedido no encontrado")
-    return db_pedido
+    pedido_info = {
+        "numero": db_pedido.pedido_id,
+        "estado": db_pedido.estado,
+    }
 
-@router.delete("/{pedido_id}", response_model=Pedido)
-def eliminar_pedido(pedido_id: int, db: Session = Depends(get_db)):
-    db_pedido = delete_pedido(db=db, pedido_id=pedido_id)
-    if db_pedido is None:
-        raise HTTPException(status_code=404, detail="Pedido no encontrado")
-    return db_pedido
-'''
+    productos = [
+        {
+            "cantidad": detalle.cantidad,
+            "descripcion": detalle.producto.nombre,
+            "precio_unitario": detalle.precio_unitario,
+            "tiene_iva": detalle.producto.tiene_iva
+        }
+        for detalle in db_pedido.detalles
+    ]
+
+    metodos_pago = [
+        "Transferencia Bancaria", 
+        "Tarjeta de Crédito",
+        "Tarjeta de Débito",
+        "Pago en Efectivo"
+    ]
+
+    pdf_path = generar_pedido(cliente, pedido_info, productos, metodos_pago)
+
+    return FileResponse(pdf_path, filename=f"Pedido_{pedido_info['numero']}.pdf", media_type='application/pdf')
+
+

@@ -1,0 +1,128 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(to bottom, #e9efff 20%, #b3c8f1 80%);
+}
+
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; 
+  padding-left: 250px;
+}
+
+.title {
+  text-align: center;
+  font-size: 2.5rem; /* Más grande */
+  font-weight: bold; /* Enfatiza el título */
+  color: #2a4d8f;
+  margin-bottom: 2rem;
+}
+
+.searchContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.searchInput {
+  max-width: 600px;
+  padding-left: 40px;
+  padding-right: 10px;
+  height: 50px; /* Más alto para mayor comodidad */
+  border: 1px solid #ced4da;
+  border-radius: 25px; /* Más redondeado */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.searchInput:focus {
+  outline: none;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.searchIcon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+}
+
+.tableContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  overflow-x: auto; /* Soporta tablas grandes */
+  margin-bottom: 20px;
+}
+
+.table {
+  width: 100%;
+  margin-bottom: 1rem;
+  margin: 0 auto;
+  border-collapse: separate;
+  border-spacing: 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Añade una sombra a la tabla */
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #fff; /* Fondo blanco */
+}
+
+.table th, .table td {
+  padding: 0.75rem;
+  text-align: center;
+}
+
+.table thead th {
+  background-color: #2a4d8f;
+  /*background-color: #001327; /* Fondo azul */
+  color: #fff; /* Texto blanco */
+}
+
+.table-striped th, .table-striped td {
+  text-align: left;
+  font-size: 1rem;
+  vertical-align: middle;
+}
+
+.btn-warning {
+  color: white;
+  background-color: #ffc107;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-warning:hover {
+  background-color: #e0a800;
+}
+
+.btn-danger {
+  transition: background-color 0.3s ease;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+.pagination .page-link {
+  color: #007bff;
+  border-radius: 50%;
+}
+
+.pagination .page-link:hover {
+  background-color: #f8f9fa;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
+}
+

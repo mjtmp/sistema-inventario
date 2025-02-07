@@ -1,53 +1,179 @@
-/* Contenedor principal que debe ocupar toda la altura de la pantalla */
 .container {
-    min-height: 100vh;  /* Asegura que la página ocupe todo el alto de la ventana */
-    display: flex;
-    flex-direction: column;  /* Coloca los elementos dentro de .container en una columna */
-}
-  
-  /* Contenido principal que ocupa el espacio restante */
-.mainContent {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;  /* Hace que este contenedor crezca y ocupe el espacio restante */
-    padding-left: 250px;  /* Ajusta según el ancho del Sidebar */
-}
-  
-/* Estilos del título */
-.title {
-    text-align: center;
-    font-size: 2rem;
-    color: #333;
-    margin-bottom: 1rem;
-}
-  
-/* Estilo para la tabla */
-.table {
-    margin-top: 2rem;
-    margin-left: 25px;  /* Añadir margen a la izquierda */
-    margin-right: 25px; /* Añadir margen a la derecha */
-    width: calc(100% - 40px); /* Ajusta el ancho de la tabla para que no se pegue a los bordes */
-    border-collapse: collapse; /* Hace que las celdas no tengan espacio entre ellas */
-}
-  
-  /* Estilo para las celdas de la tabla (celdas de los productos) */
-.table th, .table td {
-    text-align: center;
-    padding: 8px 12px; /* Añadir espacio dentro de las celdas */
-}
-  
-  /* Estilo para los encabezados de la tabla */
-.table th {
-    background-color: #f8f9fa; /* Un color de fondo para el encabezado */
-    font-weight: bold;  
-}
-  
-  
-  /* Botones */
-.btn {
-    margin-right: 10px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(to bottom, #e9efff 20%, #b3c8f1 80%);
 }
 
-.form-control {
-    width: 300px; 
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding-left: 250px;
 }
+
+.title {
+  text-align: center;
+  font-size: 2.5rem; /* Más grande */
+  font-weight: bold; /* Enfatiza el título */
+  color: #2a4d8f;
+  margin-bottom: 2rem;
+}
+
+.searchContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.searchInput {
+  max-width: 600px;
+  padding-right: 10px;
+  height: 50px; /* Más alto para mayor comodidad */
+  border: 1px solid #ced4da;
+  border-radius: 25px; /* Más redondeado */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.searchInput:focus {
+  outline: none;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.searchIcon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+}
+
+.tableContainer {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  overflow-x: auto; /* Soporta tablas grandes */
+  margin-bottom: 20px;
+}
+
+.table {
+  width: 100%;
+  margin-bottom: 1rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Añade una sombra a la tabla */
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #fff; /* Fondo blanco */
+  table-layout: fixed; /* Fija el diseño de la tabla */
+}
+
+.table th, .table td {
+  padding: 0.75rem;
+  text-align: center;
+  white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+  overflow: hidden; /* Oculta el desbordamiento del contenido */
+  text-overflow: ellipsis; /* Añade puntos suspensivos (...) al desbordar */
+}
+
+.table th {
+  background-color: #2a4d8f;
+  /*background-color: #001327;  Fondo azul */
+  color: #fff; /* Texto blanco */
+}
+
+.direccion {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.table th:nth-child(3), .table td:nth-child(3) {
+  width: 150px; 
+}
+
+.table th:nth-child(4), .table td:nth-child(4) {
+  width: 130px; 
+}
+
+.table th:nth-child(5), .table td:nth-child(5) {
+  width: 130px; 
+}
+
+.btn-warning, .btn-danger {
+  flex: 1;
+  color: white;
+  padding: 2rem 5rem; /* Reducir el padding para ganar más espacio */
+  font-size: 0.75rem; /* Reducir el tamaño de la fuente */
+  transition: background-color 0.3s ease;
+}
+
+.btn-warning {
+  background-color: #ffc107;
+  border: none;
+}
+
+.btn-warning:hover {
+  background-color: #e0a800;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  border: none;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+.paginationNav {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 1rem;
+  margin-top: 2rem;
+}
+
+.pagination .page-link {
+  color: #007bff;
+  border-radius: 50%;
+}
+
+.pagination .page-link:hover {
+  background-color: #f8f9fa;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
+}
+
+.my-popup-class {
+  background-color: #fefefe;
+  border-radius: 10px;
+}
+
+.my-title-class {
+  color: #333;
+}
+
+.my-icon-class {
+  color: #3085d6;
+}
+
+.my-confirm-button-class {
+  background-color: #3085d6;
+  border-color: #3085d6;
+}
+
+.my-cancel-button-class {
+  background-color: #d33;
+  border-color: #d33;
+}
+

@@ -14,9 +14,7 @@ const Login = () => {
     const token = localStorage.getItem('token');
     const userRol = localStorage.getItem('rol');
 
-  
-    // Si hay un token, redirige según el rol solo si estamos iniciando sesión
-    if (token && router.pathname === '/login') {
+    if (token) {
       if (userRol === 'admin') {
         router.push('/admin-dashboard');
       } else {
@@ -24,7 +22,6 @@ const Login = () => {
       }
     }
   }, [router]);
-  
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -34,8 +31,10 @@ const Login = () => {
       if (response.status === 200) {
         const token = response.data.token;
         const userRol = response.data.rol;
+        const usuarioId = response.data.usuario_id; // Ajusta según el nombre del campo en tu backend
         localStorage.setItem('token', token);
         localStorage.setItem('rol', userRol); // Guardar el rol del usuario
+        localStorage.setItem('usuario_id', usuarioId); // Guardar el ID del usuario
         localStorage.setItem('name', response.data.usuarioName); // Guardar el nombre del usuario
         if (userRol === 'admin') {
           router.push('/admin-dashboard');
@@ -46,6 +45,10 @@ const Login = () => {
     } catch (error) {
       alert('Credenciales incorrectas, por favor intenta de nuevo');
     }
+  };
+
+  const handleRegister = () => {
+    router.push('/registro'); // Redirige al formulario de registro
   };
 
   return (
@@ -77,6 +80,9 @@ const Login = () => {
               Iniciar Sesión
             </button>
           </form>
+          <p className={`${styles['register-link']} mt-3`}>
+            ¿No tienes una cuenta? <span onClick={handleRegister} className={styles['register-text']}>Regístrate</span>
+          </p>
         </div>
       </div>
     </div>
@@ -84,9 +90,5 @@ const Login = () => {
 };
 
 export default Login;
-
-
-
-
 
 

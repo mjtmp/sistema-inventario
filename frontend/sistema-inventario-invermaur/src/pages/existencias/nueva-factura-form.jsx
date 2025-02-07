@@ -7,6 +7,8 @@ import Header from '../../layouts/Header';
 import Footer from '../../layouts/Footer';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styles from './styles/nueva-factura-form.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faCalendarAlt, faBox, faPlusCircle, faTrashAlt, faUserTie } from '@fortawesome/free-solid-svg-icons';
 
 const NuevaFactura = ({ onClose, onFacturaCreada }) => {
     const [clienteId, setClienteId] = useState('');
@@ -92,14 +94,24 @@ const NuevaFactura = ({ onClose, onFacturaCreada }) => {
 
     const crearPedido = (clienteId) => {
         const fecha_pedido = new Date().toISOString().split('T')[0];
-        return axios.post('http://localhost:8000/pedidos', { cliente_id: clienteId, fecha_pedido })
+        const estado = 'pendiente';
+    
+        const detalles = productos.map((producto) => ({
+            producto_id: producto.producto ? producto.producto.value : '',
+            cantidad: producto.cantidad,
+            precio_unitario: producto.precio,
+            pedido_id: 0,
+            detalle_id: 0
+        }));
+    
+        return axios.post('http://localhost:8000/pedidos', { cliente_id: clienteId, fecha_pedido, estado, detalles })
             .then(response => response.data)
             .catch(error => {
                 console.error('Error al crear pedido:', error.response ? error.response.data : error.message);
                 throw error;
             });
     };
-
+    
     const handleSubmit = (event) => {
         event.preventDefault();
         crearPedido(clienteId)
@@ -114,7 +126,8 @@ const NuevaFactura = ({ onClose, onFacturaCreada }) => {
                         precio_unitario: producto.precio,
                     })),
                 };
-
+                console.log("Datos enviados para crear una nueva factura:", nuevaFactura);
+    
                 return axios.post('http://localhost:8000/facturas', nuevaFactura);
             })
             .then((response) => {
@@ -136,13 +149,16 @@ const NuevaFactura = ({ onClose, onFacturaCreada }) => {
             <Sidebar />
             <div className={styles.mainContent}>
                 <Header />
-                <div className="container mt-5">
-                    <h2>Crear Nueva Factura</h2>
-                    <form onSubmit={handleSubmit}>
-                        <div className="form-group">
-                            <label htmlFor="clienteId">Cliente</label>
+                <div className={`${styles.card} mt-5`}>
+                    <h2 className={styles.title}>
+                        <FontAwesomeIcon icon={faPlusCircle} className={styles.titleIcon} /> Crear Nueva Factura
+                    </h2>
+                    <form onSubmit={handleSubmit} className={styles.form}>
+                        <div className={styles.formGroup}>
+                            <label htmlFor="clienteId" className={styles.label}>
+                                <FontAwesomeIcon icon={faUser} className={styles.icon} /> Cliente
+                            </label>
                             <Select
-                                className="form-control"
                                 value={clientesOptions.find(option => option.value === clienteId)}
                                 onInputChange={buscarClientes}
                                 onChange={(selectedOption) => setClienteId(selectedOption.value)}
@@ -150,13 +166,17 @@ const NuevaFactura = ({ onClose, onFacturaCreada }) => {
                                 placeholder="Seleccionar Cliente"
                                 isSearchable
                                 required
+                                className={styles.customSelect}
                             />
                         </div>
-                        <div className="form-group">
-                            <label htmlFor="fechaEmision">Fecha de Emisión</label>
+
+                        <div className={styles.formGroup}>
+                            <label htmlFor="fechaEmision" className={styles.label}>
+                                <FontAwesomeIcon icon={faCalendarAlt} className={styles.icon} /> Fecha de Emisión
+                            </label>
                             <input
                                 type="date"
-                                className="form-control"
+                                className={styles.input}
                                 id="fechaEmision"
                                 name="fechaEmision"
                                 value={fechaEmision}
@@ -164,77 +184,81 @@ const NuevaFactura = ({ onClose, onFacturaCreada }) => {
                                 required
                             />
                         </div>
+
                         {productos.map((producto, index) => (
-                            <div key={index} className="form-group">
-                                <label>Producto {index + 1}</label>
-                                <div className="d-flex">
-                                    <Select
-                                        className="form-control mr-2"
-                                        value={producto.producto}
-                                        onInputChange={buscarProductos}
-                                        onChange={(selectedOption) => handleProductoChange(index, selectedOption)}
-                                        options={productosOptions}
-                                        placeholder="Seleccionar Producto"
-                                        isSearchable
-                                        required
-                                    />
-                                    <input
-                                        type="number"
-                                        className="form-control mr-2"
-                                        name="cantidad"
-                                        placeholder="Cantidad"
-                                        value={producto.cantidad}
-                                        onChange={(event) => handleCantidadChange(index, event)}
-                                        required
-                                    />
-                                    <input
-                                        type="number"
-                                        className="form-control mr-2"
-                                        name="precio"
-                                        placeholder="Precio"
-                                        value={producto.precio}
-                                        readOnly
-                                    />
-                                    <button
-                                        type="button"
-                                        className="btn btn-danger"
-                                        onClick={() => handleRemoveProducto(index)}
-                                    >
-                                        Eliminar
-                                    </button>
-                                </div>
+                            <div key={index} className={styles.productGroup}>
+                                <label htmlFor="fechaEmision" className={styles.label}>
+                                    <FontAwesomeIcon icon={faBox} className={styles.titleIcon} /> Productos
+                                </label>
+                                
+                                <Select
+                                    value={producto.producto}
+                                    onInputChange={buscarProductos}
+                                    onChange={(selectedOption) => handleProductoChange(index, selectedOption)}
+                                    options={productosOptions}
+                                    placeholder="Producto"
+                                    isSearchable
+                                    className={styles.productSelect}
+                                    required
+                                />
+                                <input
+                                    type="number"
+                                    placeholder="Cantidad"
+                                    name="cantidad"
+                                    value={producto.cantidad}
+                                    onChange={(event) => handleCantidadChange(index, event)}
+                                    className={styles.inputSmall}
+                                    required
+                                />
+                                <input
+                                    type="number"
+                                    placeholder="Precio"
+                                    name="precio"
+                                    value={producto.precio}
+                                    className={styles.inputSmall}
+                                    readOnly
+                                />
+                                <button
+                                    type="button"
+                                    className={styles.btnRemove}
+                                    onClick={() => handleRemoveProducto(index)}
+                                >
+                                    <FontAwesomeIcon icon={faTrashAlt} />
+                                </button>
                             </div>
                         ))}
                         <button
                             type="button"
-                            className="btn btn-secondary mb-3"
+                            className={styles.btnAdd}
                             onClick={handleAddProducto}
                         >
-                            Añadir Producto
+                            <FontAwesomeIcon icon={faPlusCircle} /> Añadir Producto
                         </button>
-                        <div className="form-group">
-                            <label htmlFor="vendedorId">Vendedor</label>
+
+                        <div className={styles.formGroup}>
+                            <label htmlFor="vendedorId" className={styles.label}>
+                                <FontAwesomeIcon icon={faUserTie} className={styles.icon} /> Vendedor
+                            </label>
                             <Select
-                                className="form-control"
                                 value={vendedoresOptions.find(option => option.value === vendedorId)}
                                 onInputChange={buscarVendedores}
                                 onChange={(selectedOption) => setVendedorId(selectedOption.value)}
                                 options={vendedoresOptions}
                                 placeholder="Seleccionar Vendedor"
+                                className={styles.customSelect}
                                 isSearchable
                                 required
                             />
                         </div>
-                        <button type="submit" className="btn btn-primary">Crear Factura</button>
-                        {onClose && (
-                            <button
-                                type="button"
-                                className="btn btn-secondary ml-2"
-                                onClick={onClose}
-                            >
-                                Cancelar
-                            </button>
-                        )}
+
+                        <div className={styles.buttonGroup}>
+                            <button type="submit" className={styles.btnPrimary}>Crear Factura</button>
+                            {onClose && (
+                                <button type="button" className={styles.btnSecondary} onClick={onClose}>
+                                    Cancelar
+                                </button>
+                            )}
+                        </div>
                     </form>
                 </div>
                 <Footer />
@@ -244,3 +268,4 @@ const NuevaFactura = ({ onClose, onFacturaCreada }) => {
 };
 
 export default NuevaFactura;
+

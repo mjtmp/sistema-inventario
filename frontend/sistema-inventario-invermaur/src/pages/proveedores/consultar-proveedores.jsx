@@ -6,135 +6,199 @@ import Header from '../../layouts/Header';
 import Footer from '../../layouts/Footer';
 import styles from './styles/consultar-proveedores.module.css';
 import Link from 'next/link';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch, faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
-// Componente para consultar proveedores
+const MySwal = withReactContent(Swal);
+
 const ConsultarProveedores = () => {
-  // Estado para almacenar los proveedores obtenidos desde la API
   const [proveedores, setProveedores] = useState([]);
-  // Estado para almacenar el término de búsqueda
   const [searchTerm, setSearchTerm] = useState('');
-  // Estado para la página actual de la paginación
   const [page, setPage] = useState(1);
-  // Estado para definir cuántos proveedores mostrar por página
   const [limit, setLimit] = useState(10);
-  // Estado para almacenar el total de proveedores
   const [totalProveedores, setTotalProveedores] = useState(0);
 
-  // useEffect para cargar los proveedores cada vez que la página o límite cambian
   useEffect(() => {
     const fetchProveedores = async () => {
       try {
-        // Realiza la petición GET a la API para obtener proveedores con paginación
         const response = await axios.get(`http://localhost:8000/proveedores?page=${page}&limit=${limit}`);
-        setProveedores(response.data.proveedores); // Establece los proveedores obtenidos
-        setTotalProveedores(response.data.total); // Establece el total de proveedores
+        setProveedores(response.data.proveedores);
+        setTotalProveedores(response.data.total);
       } catch (error) {
-        // Manejo de errores si la API no responde correctamente
         console.error('Error al cargar los proveedores:', error);
       }
     };
-    fetchProveedores(); // Llama la función para obtener proveedores
-  }, [page, limit]); // Dependencias para recargar cuando cambia la página o el límite
+    fetchProveedores();
+  }, [page, limit]);
 
-  // Filtra los proveedores según el término de búsqueda (filtra por nombre)
   const filteredProveedores = proveedores
     ? proveedores.filter(proveedor =>
-        proveedor.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+        proveedor.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        proveedor.rif.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : [];
 
-  // Función para eliminar un proveedor
-  const handleDelete = async (proveedor_id) => {
-    const confirmDelete = window.confirm('¿Estás seguro de que deseas eliminar este proveedor?');
-    if (confirmDelete) {
+  const handleEditProveedor = async (proveedor_id) => {
+    const result = await MySwal.fire({
+      title: '¿Estás seguro?',
+      text: '¿Deseas editar este proveedor?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, editar',
+      cancelButtonText: 'Cancelar',
+      customClass: {
+        popup: 'my-popup-class',
+        title: 'my-title-class',
+        icon: 'my-icon-class',
+        confirmButton: 'my-confirm-button-class',
+        cancelButton: 'my-cancel-button-class'
+      }
+    });
+
+    if (result.isConfirmed) {
+      window.location.href = `/proveedores/${proveedor_id}`;
+    }
+  };
+
+  const handleDeleteProveedor = async (proveedor_id) => {
+    const result = await MySwal.fire({
+      title: '¿Estás seguro?',
+      text: '¿Deseas eliminar este proveedor?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      customClass: {
+        popup: 'my-popup-class',
+        title: 'my-title-class',
+        icon: 'my-icon-class',
+        confirmButton: 'my-confirm-button-class',
+        cancelButton: 'my-cancel-button-class'
+      }
+    });
+
+    if (result.isConfirmed) {
       try {
-        // Realiza la petición DELETE a la API para eliminar el proveedor
         await axios.delete(`http://localhost:8000/proveedores/${proveedor_id}`);
-        setProveedores(proveedores.filter(proveedor => proveedor.proveedor_id !== proveedor_id)); // Actualiza la lista de proveedores
-        alert('Proveedor eliminado exitosamente');
+        setProveedores(proveedores.filter((proveedor) => proveedor.proveedor_id !== proveedor_id));
+        MySwal.fire({
+          title: 'Eliminado',
+          text: 'El proveedor ha sido eliminado correctamente.',
+          icon: 'success',
+          confirmButtonColor: '#3085d6',
+          customClass: {
+            popup: 'my-popup-class',
+            title: 'my-title-class',
+            icon: 'my-icon-class',
+            confirmButton: 'my-confirm-button-class'
+          }
+        });
       } catch (error) {
-        // Manejo de errores si no se puede eliminar el proveedor
         console.error('Error al eliminar el proveedor:', error);
-        alert('Hubo un error al eliminar el proveedor');
+        MySwal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Hubo un error al eliminar el proveedor.',
+          confirmButtonColor: '#d33',
+          customClass: {
+            popup: 'my-popup-class',
+            title: 'my-title-class',
+            icon: 'my-icon-class',
+            confirmButton: 'my-confirm-button-class'
+          }
+        });
       }
     }
   };
 
-  // Calcula el total de páginas en base al número de proveedores y el límite
   const totalPages = Math.ceil(totalProveedores / limit);
 
-  // Funciones para cambiar de página en la paginación
   const handleNextPage = () => {
     if (page < totalPages) {
-      setPage(page + 1); // Avanza a la siguiente página si no es la última
+      setPage(page + 1);
     }
   };
 
   const handlePreviousPage = () => {
     if (page > 1) {
-      setPage(page - 1); // Regresa a la página anterior si no es la primera
+      setPage(page - 1);
     }
   };
 
   return (
     <div className={styles.container}>
-      <Sidebar /> {/* Componente de la barra lateral */}
+      <Sidebar />
       <div className={styles.mainContent}>
-        <Header /> {/* Componente del encabezado */}
+        <Header />
         <div className="container mt-5">
-          <h2 className={styles.title}>Consultar Proveedores</h2>
-          {/* Campo de búsqueda para filtrar proveedores por nombre */}
-          <input
-            type="text"
-            className="form-control mb-4"
-            placeholder="Buscar proveedor por nombre..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)} // Actualiza el término de búsqueda
-          />
+          <h2 className={`${styles.title} text-center`}>Consultar Proveedores</h2>
 
-          {/* Tabla para mostrar los proveedores filtrados */}
-          <table className="table table-striped">
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Email</th>
-                <th>Teléfono</th>
-                <th>Dirección</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* Mapea los proveedores filtrados y los muestra en la tabla */}
-              {filteredProveedores.map((proveedor) => (
-                <tr key={proveedor.proveedor_id}>
-                  <td>{proveedor.nombre}</td>
-                  <td>{proveedor.email}</td>
-                  <td>{proveedor.telefono}</td>
-                  <td>{proveedor.direccion}</td>
-                  <td>
-                    {/* Botón para editar proveedor, redirige a la página de edición */}
-                    <button className="btn btn-warning btn-sm">
-                      {proveedor.proveedor_id ? (
-                        <Link href={`/proveedores/${proveedor.proveedor_id}`}>Editar</Link>
-                      ) : (
-                        <span>No ID disponible</span>
-                      )}
-                    </button>
-                    {/* Botón para eliminar proveedor */}
-                    <button
-                      className="btn btn-danger btn-sm ml-2"
-                      onClick={() => handleDelete(proveedor.proveedor_id)}
-                    >
-                      Eliminar
-                    </button>
-                  </td>
+          {/* Barra de búsqueda */}
+          <div className={`${styles.searchContainer} d-flex justify-content-center`}>
+            <div className="input-group mb-4" style={{ maxWidth: '600px' }}>
+              <span className="input-group-text bg-primary text-white">
+                <FontAwesomeIcon icon={faSearch} />
+              </span>
+              <input
+                type="text"
+                className={`form-control ${styles.searchInput}`}
+                placeholder="Buscar proveedor por nombre o RIF..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className={styles.tableContainer}>
+            <table className={`${styles.table} table`}>
+              <thead>
+                <tr>
+                  <th className="text-center">Nombre</th>
+                  <th className="text-center">Email</th>
+                  <th className="text-center">Teléfono</th>
+                  <th className="text-center">Dirección</th>
+                  <th className="text-center">RIF</th>
+                  <th className="text-center">Acciones</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredProveedores.map((proveedor) => (
+                  <tr key={proveedor.proveedor_id}>
+                    <td className="text-center">{proveedor.nombre}</td>
+                    <td className="text-center">{proveedor.email}</td>
+                    <td className="text-center">{proveedor.telefono}</td>
+                    <td className={`${styles.direccion} text-center`}>{proveedor.direccion}</td>
+                    <td className="text-center">{proveedor.rif}</td>
+                    <td className="text-center">
+                      <div className="d-flex justify-content-center gap-2">
+                        <button
+                          className="btn btn-warning btn-sm"
+                          onClick={() => handleEditProveedor(proveedor.proveedor_id)}
+                        >
+                          <FontAwesomeIcon icon={faEdit} className="me-1" /> Editar
+                        </button>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => handleDeleteProveedor(proveedor.proveedor_id)}
+                        >
+                          <FontAwesomeIcon icon={faTrashAlt} className="me-1" /> Eliminar
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-          {/* Paginación para navegar entre páginas de proveedores */}
-          <nav>
+          {/* Paginación */}
+          <nav className={styles.paginationNav}>
             <ul className="pagination justify-content-center">
               <li className={`page-item ${page === 1 ? 'disabled' : ''}`}>
                 <button className="page-link" onClick={handlePreviousPage}>Anterior</button>
@@ -150,11 +214,13 @@ const ConsultarProveedores = () => {
             </ul>
           </nav>
         </div>
-        <Footer /> {/* Componente del pie de página */}
+        <Footer />
       </div>
     </div>
   );
 };
 
 export default ConsultarProveedores;
+
+
 

@@ -12,19 +12,11 @@ class Usuario(BaseModel):
     usuario_id: int
     nombre: str
 
-# Esquema para los datos de una factura
-class Factura(BaseModel):
-    factura_id: int
-    numero_factura: str
-    monto_total: float
-    pagado: float
-    debido: float
-
 # Base para las salidas de inventario
 class SalidaInventarioBase(BaseModel):
     producto_id: int
     cliente_id: int
-    factura_id: int
+    pedido_id: int
     cantidad: int
     precio_venta: float
     vendedor_id: int
@@ -43,8 +35,12 @@ class SalidaInventario(SalidaInventarioBase):
     fecha: date
     cliente: Optional[Cliente] = None  # Relación con cliente
     vendedor: Optional[Usuario] = None  # Relación con vendedor
-    factura: Optional[Factura] = None  # Relación con factura
+    pedido: Optional[Cliente] = None  # Relación con pedido
+
+class SalidaProductoResponse(BaseModel):
+    producto: str
+    total_salidas: int
+    valor_salidas: float
 
     class Config:
         from_attributes = True  # Permite que los atributos del modelo de SQLAlchemy se utilicen directamente
-

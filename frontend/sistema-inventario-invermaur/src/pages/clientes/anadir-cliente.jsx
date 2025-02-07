@@ -1,59 +1,90 @@
-// Importación de dependencias y componentes necesarios
-import React, { useState } from 'react'; // useState es un hook de React para gestionar el estado
-import axios from 'axios'; // Axios para realizar peticiones HTTP
-import 'bootstrap/dist/css/bootstrap.min.css'; // Estilos de Bootstrap
-import Sidebar from '../../components/Sidebar'; // Sidebar componente
-import Header from '../../layouts/Header'; // Header del sitio
-import Footer from '../../layouts/Footer'; // Footer del sitio
-import styles from './styles/anadir-cliente.module.css'; // Estilos personalizados para este componente
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Sidebar from '../../components/Sidebar';
+import Header from '../../layouts/Header';
+import Footer from '../../layouts/Footer';
+import styles from './styles/anadir-cliente.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faEnvelope, faPhone, faAddressCard, faIdCard, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 
-const AñadirCliente = () => {
-  // Estados para almacenar los datos del cliente a añadir
+const AnadirCliente = () => {
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
   const [telefono, setTelefono] = useState('');
   const [direccion, setDireccion] = useState('');
+  const [tipoDocumento, setTipoDocumento] = useState('');
+  const [numeroDocumento, setNumeroDocumento] = useState('');
+  const [usuarioId, setUsuarioId] = useState(null);
 
-  // Función que se ejecuta cuando el formulario se envía
+  useEffect(() => {
+    const userId = localStorage.getItem('usuario_id'); // Obtener el usuario_id del almacenamiento local
+    setUsuarioId(userId);
+  }, []);
+
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevenir comportamiento por defecto del formulario
+    e.preventDefault();
 
-    // Validación básica para asegurarse de que los campos obligatorios estén completos
-    if (!nombre || !email || !telefono) {
+    if (!nombre || !email || !telefono || !tipoDocumento || !numeroDocumento) {
       alert('Por favor complete todos los campos requeridos');
       return;
     }
 
+    if (!usuarioId) {
+      alert('No se pudo obtener el ID del usuario. Por favor, inicia sesión de nuevo.');
+      return;
+    }
+
+    const clienteData = {
+      nombre,
+      email,
+      telefono,
+      direccion,
+      tipo_documento: tipoDocumento,
+      numero_documento: numeroDocumento,
+      usuario_id: usuarioId  // Incluyendo el usuario_id en la solicitud
+    };
+
+    console.log('Usuario ID:', usuarioId); // Verificar usuario_id
+    console.log('Datos a enviar:', clienteData); // Verificar los datos que se enviarán
+
     try {
-      // Realiza una solicitud POST para añadir el nuevo cliente
-      await axios.post('http://localhost:8000/clientes', {
-        nombre,
-        email,
-        telefono,
-        direccion
-      });
-      alert('Cliente añadido exitosamente'); // Mensaje de éxito
-      setNombre(''); // Reinicia el campo nombre
-      setEmail(''); // Reinicia el campo email
-      setTelefono(''); // Reinicia el campo teléfono
-      setDireccion(''); // Reinicia el campo dirección
+      // Verificar si el número de documento ya existe
+      const response = await axios.get(`http://localhost:8000/clientes/buscar-por-documento?numero_documento=${numeroDocumento}`);
+      if (response.data.length > 0) {
+        alert('El número de documento ya existe. Por favor, intenta con un número distinto.');
+        return;
+      }
+
+      await axios.post('http://localhost:8000/clientes', clienteData);
+      alert('Cliente añadido exitosamente');
+      setNombre('');
+      setEmail('');
+      setTelefono('');
+      setDireccion('');
+      setTipoDocumento('');
+      setNumeroDocumento('');
     } catch (error) {
-      console.error('Error al añadir el cliente:', error); // Manejo de errores
-      alert('Hubo un error al añadir el cliente'); // Mensaje de error si algo falla
+      console.error('Error al añadir el cliente:', error);
+      alert('Hubo un error al añadir el cliente. Intente nuevamente.');
     }
   };
 
   return (
     <div className={styles.container}>
-      <Sidebar /> {/* Componente del sidebar */}
+      <Sidebar />
       <div className={styles.mainContent}>
-        <Header /> {/* Componente del header */}
+        <Header />
         <div className="container mt-5">
-          <h2 className={styles.title}>Añadir Cliente</h2>
+          <h2 className={styles.title}>
+            <FontAwesomeIcon icon={faPlusCircle} className={styles.titleIcon} />
+            Añadir Cliente
+          </h2>
           <form onSubmit={handleSubmit} className={styles.formContainer}>
-            {/* Campos del formulario para añadir un nuevo cliente */}
             <div className="form-group">
-              <label>Nombre del Cliente</label>
+              <label className={styles.boldLabel}>
+                <FontAwesomeIcon icon={faUser} className={styles.icon} /> Nombre del Cliente
+              </label>
               <input 
                 type="text" 
                 className="form-control" 
@@ -63,7 +94,9 @@ const AñadirCliente = () => {
               />
             </div>
             <div className="form-group mt-3">
-              <label>Email</label>
+              <label className={styles.boldLabel}>
+                <FontAwesomeIcon icon={faEnvelope} className={styles.icon} /> Email
+              </label>
               <input 
                 type="email" 
                 className="form-control" 
@@ -73,7 +106,9 @@ const AñadirCliente = () => {
               />
             </div>
             <div className="form-group mt-3">
-              <label>Teléfono</label>
+              <label className={styles.boldLabel}>
+                <FontAwesomeIcon icon={faPhone} className={styles.icon} /> Teléfono
+              </label>
               <input 
                 type="text" 
                 className="form-control" 
@@ -83,21 +118,59 @@ const AñadirCliente = () => {
               />
             </div>
             <div className="form-group mt-3">
-              <label>Dirección</label>
+              <label className={styles.boldLabel}>
+                <FontAwesomeIcon icon={faAddressCard} className={styles.icon} /> Dirección
+              </label>
               <textarea 
                 className="form-control" 
                 value={direccion} 
                 onChange={(e) => setDireccion(e.target.value)} 
               />
             </div>
-            <button type="submit" className="btn btn-primary mt-4">Añadir Cliente</button> {/* Botón para enviar el formulario */}
+            <div className="form-group mt-3">
+              <label className={styles.boldLabel}>
+                <FontAwesomeIcon icon={faIdCard} className={styles.icon} /> Tipo de Documento
+              </label>
+              <select 
+                className="form-control"
+                value={tipoDocumento}
+                onChange={(e) => setTipoDocumento(e.target.value)}
+                required
+              >
+                <option value="">Selecciona un tipo de documento</option>
+                <option value="CV">Cédula Venezolana</option>
+                <option value="CE">Cédula Extranjera</option>
+                <option value="PAS">Pasaporte</option>
+                <option value="RIF-N">RIF - Personal Natural</option>
+                <option value="RIF-J">RIF - Persona Juridica</option>
+                <option value="RIF-E">RIF - E</option>
+              </select>
+            </div>
+            <div className="form-group mt-3">
+              <label className={styles.boldLabel}>
+                <FontAwesomeIcon icon={faIdCard} className={styles.icon} /> Número de Documento
+              </label>
+              <input 
+                type="text" 
+                className="form-control" 
+                value={numeroDocumento} 
+                onChange={(e) => setNumeroDocumento(e.target.value)} 
+                required 
+              />
+            </div>
+            <button type="submit" className={`${styles.btnPrimary} btn mt-4`}>Añadir Cliente</button>
           </form>
         </div>
-        <Footer /> {/* Componente del footer */}
+        <Footer />
       </div>
     </div>
   );
 };
 
-export default AñadirCliente; // Exporta el componente para su uso en otras partes de la aplicación
+export default AnadirCliente;
+
+
+
+
+
 

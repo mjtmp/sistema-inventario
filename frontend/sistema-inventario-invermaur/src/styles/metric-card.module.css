@@ -1,53 +1,66 @@
 .metricCard {
     border: 1px solid #e0e0e0;
-    border-radius: 12px;
-    margin-bottom: 1.5rem;
-    background-color: #ffffff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    border-radius: 8px; 
+    margin-bottom: 0.75rem; 
+    /*background-color: #ffffff;*/
+    background: linear-gradient(to right, #f8f9fa, #dee2e6);
+    /*background: #ffffff;*/    
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     overflow: hidden;
+    display: flex; 
+    flex-direction: column;
+    justify-content: center;
+    height: 100px; 
 }
 
 .metricCard:hover {
     background-color: #f9f9f9;
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    outline: 0.1rem solid #007bff;
-    stroke: #007bff;
-
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    outline: 0.1rem solid #001429;
 }
 
 .metricBody {
-    padding: 2rem;
+    padding: 1rem; 
     text-align: center;
+    flex: 1; 
 }
 
 .metricTitle {
-    font-size: 1.2rem;
+    font-size: 1rem; 
     font-weight: 600;
     color: #333;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
 .metricValue {
-    font-size: 1.5rem;
+    font-size: 1.2rem; 
     font-weight: bold;
-    color: #007bff;
+    color: #003e81;
     margin-top: 0.5rem;
+}
+
+.iconContainer {
+    font-size: 1.5rem;
+    color: #001124;
+    margin-bottom: 0.5rem;
 }
 
 @media (max-width: 768px) {
     .metricBody {
-        padding: 1.5rem;
+        padding: 0.75rem; 
     }
 
     .metricTitle {
-        font-size: 1.2rem;
+        font-size: 0.9rem; 
     }
 
     .metricValue {
-        font-size: 2rem;
+        font-size: 1rem; 
     }
 }
+
+

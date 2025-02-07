@@ -1,46 +1,52 @@
-from sqlalchemy.orm import Session  # Importamos Session para interactuar con la base de datos.
-from datetime import datetime  # Para obtener la fecha y hora actual.
-from models.models import Cliente  # Importamos el modelo Cliente para interactuar con la tabla correspondiente.
-from schemas.clientes import ClienteCreate, ClienteUpdate  # Importamos los esquemas para la creación y actualización de clientes.
+from sqlalchemy.orm import Session
+from datetime import datetime
+from models.models import Cliente
+from schemas.clientes import ClienteCreate, ClienteUpdate
+from crud.historial import registrar_accion  # Importar la función para registrar acciones
 
-# Función para obtener un cliente por su ID.
+def numero_documento_existe(db: Session, numero_documento: str) -> bool:
+    return db.query(Cliente).filter(Cliente.numero_documento == numero_documento).first() is not None
+
 def get_cliente(db: Session, cliente_id: int):
-    return db.query(Cliente).filter(Cliente.cliente_id == cliente_id).first()  # Realiza la consulta en la base de datos.
+    return db.query(Cliente).filter(Cliente.cliente_id == cliente_id).first()
 
-# Función para obtener todos los clientes con paginación.
 def get_clientes(db: Session, skip: int = 0, limit: int = 10):
-    clientes = db.query(Cliente).offset(skip).limit(limit).all()  # Obtiene los clientes con paginación.
-    total = db.query(Cliente).count()  # Cuenta el total de clientes en la base de datos.
-    return clientes, total  # Devuelve los clientes y el total.
+    clientes = db.query(Cliente).offset(skip).limit(limit).all()
+    total = db.query(Cliente).count()
+    return clientes, total
 
-# Función para crear un nuevo cliente.
-def create_cliente(db: Session, cliente: ClienteCreate):
-    # Asignamos la fecha de creación y la fecha de actualización al crear un nuevo cliente.
-    db_cliente = Cliente(**cliente.dict(), fecha_creacion=datetime.now(), fecha_actualizacion=datetime.now())
-    db.add(db_cliente)  # Añadimos el cliente a la sesión de base de datos.
-    db.commit()  # Confirmamos la transacción.
-    db.refresh(db_cliente)  # Refrescamos el cliente con los datos actualizados (como el ID generado).
-    return db_cliente  # Retornamos el cliente creado.
+def create_cliente(db: Session, cliente: ClienteCreate, usuario_id: int):
+    if numero_documento_existe(db, cliente.numero_documento):
+        raise ValueError("El número de documento ya existe. Por favor, elige un número de documento distinto.")
+    db_cliente = Cliente(**cliente.dict(exclude={"usuario_id"}), fecha_creacion=datetime.now(), fecha_actualizacion=datetime.now())
+    db.add(db_cliente)
+    db.commit()
+    db.refresh(db_cliente)
+    registrar_accion(db, usuario_id, "Registro de cliente", f"Cliente {db_cliente.nombre} registrado.")
+    return db_cliente
 
-# Función para actualizar un cliente existente.
-def update_cliente(db: Session, cliente_id: int, cliente: ClienteUpdate):
-    db_cliente = get_cliente(db, cliente_id)  # Buscamos el cliente por su ID.
-    if db_cliente:  # Si el cliente existe en la base de datos.
-        # Actualizamos cada atributo que se haya enviado en la solicitud (sin modificar los no proporcionados).
+def update_cliente(db: Session, cliente_id: int, cliente: ClienteUpdate, usuario_id: int):
+    db_cliente = get_cliente(db, cliente_id)
+    if db_cliente:
+        if cliente.numero_documento and cliente.numero_documento != db_cliente.numero_documento:
+            if numero_documento_existe(db, cliente.numero_documento):
+                raise ValueError("El número de documento ya existe. Por favor, elige un número de documento distinto.")
         for key, value in cliente.dict(exclude_unset=True).items():
             setattr(db_cliente, key, value)
-        db_cliente.fecha_actualizacion = datetime.now()  # Actualizamos la fecha de actualización.
-        db.commit()  # Confirmamos los cambios.
-        db.refresh(db_cliente)  # Refrescamos los datos del cliente actualizado.
-        return db_cliente  # Retornamos el cliente actualizado.
-    return None  # Si no se encuentra el cliente, retornamos None.
+        db_cliente.fecha_actualizacion = datetime.now()
+        db.commit()
+        db.refresh(db_cliente)
+        registrar_accion(db, usuario_id, "Actualización de cliente", f"Cliente {db_cliente.nombre} actualizado.")
+        return db_cliente
+    return None
 
-# Función para eliminar un cliente.
-def delete_cliente(db: Session, cliente_id: int):
-    db_cliente = get_cliente(db, cliente_id)  # Buscamos el cliente por su ID.
-    if db_cliente:  # Si el cliente existe.
-        db.delete(db_cliente)  # Eliminamos el cliente de la base de datos.
-        db.commit()  # Confirmamos la transacción de eliminación.
-        return db_cliente  # Retornamos el cliente eliminado.
-    return None  # Si el cliente no se encuentra, retornamos None.
+def delete_cliente(db: Session, cliente_id: int, usuario_id: int):
+    db_cliente = get_cliente(db, cliente_id)
+    if db_cliente:
+        db.delete(db_cliente)
+        db.commit()
+        registrar_accion(db, usuario_id, "Eliminación de cliente", f"Cliente {db_cliente.nombre} eliminado.")
+        return db_cliente
+    return None
+
 

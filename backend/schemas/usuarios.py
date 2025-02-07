@@ -21,41 +21,21 @@ class UsuarioUpdate(UsuarioBase):
     nombre: Optional[str] = None  # Nombre opcional para la actualización
     email: Optional[str] = None  # Email opcional para la actualización
     contraseña: Optional[str] = None  # Contraseña opcional para la actualización
+    rol_id: Optional[int] = None  # ID del rol opcional para la actualización
 
 # Esquema para representar al usuario en la base de datos (con id )
 class Usuario(UsuarioBase):
     usuario_id: int  # ID del usuario
     rol: Optional[Rol]  # Rol asociado al usuario (relación opcional)
-    
+
     class Config:
         from_attributes = True  # Asegura que SQLAlchemy pueda convertir el modelo en un diccionario
 
-
-
-'''from pydantic import BaseModel
-from typing import Optional
-
-class UsuarioBase(BaseModel):
-    nombre: str
-    email: str
-    rol_id: int
-    contraseña: str
-    
-class Rol(BaseModel):
-    nombre: str
-
-class UsuarioCreate(UsuarioBase):
-    contraseña: str
-
-class UsuarioUpdate(BaseModel):
+class UsuarioProfileUpdate(BaseModel):
     nombre: Optional[str] = None
     email: Optional[str] = None
-    contraseña: Optional[str] = None
-    rol_id: Optional[int] = None
 
-class Usuario(UsuarioBase):
-    usuario_id: int
-    rol: Optional[Rol]  # Incluye el esquema del rol como relación
-
-    class Config:
-        from_attributes = True'''
+class ChangePassword(BaseModel):
+    current_password: str
+    new_password: str
+    confirm_new_password: str

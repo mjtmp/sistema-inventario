@@ -6,6 +6,8 @@ import Header from '../../layouts/Header';
 import Footer from '../../layouts/Footer';
 import styles from './styles/editar-usuario.module.css';
 import { useRouter } from 'next/router';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faEnvelope, faPhone, faMapMarkedAlt, faLock, faUserTag, faEdit } from '@fortawesome/free-solid-svg-icons';
 
 const EditarUsuario = () => {
   const router = useRouter();
@@ -16,7 +18,7 @@ const EditarUsuario = () => {
     email: '',
     telefono: '',
     direccion: '',
-    rol: '',
+    rol_id: '', // Cambiado a rol_id
     contraseña: '' // Campo de contraseña
   });
 
@@ -24,13 +26,13 @@ const EditarUsuario = () => {
     if (usuario_id) {
       axios.get(`http://localhost:8000/usuarios/${usuario_id}`)
         .then(response => {
-          const { nombre, email, telefono, direccion, rol } = response.data;
+          const { nombre, email, telefono, direccion, rol_id } = response.data;
           setUsuario({
             nombre,
             email,
             telefono,
             direccion,
-            rol,
+            rol_id, // Cambiado a rol_id
             contraseña: '' // No cargar la contraseña por razones de seguridad
           });
         })
@@ -39,6 +41,11 @@ const EditarUsuario = () => {
         });
     }
   }, [usuario_id]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUsuario({ ...usuario, [name]: value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,7 +56,7 @@ const EditarUsuario = () => {
         email: usuario.email,
         telefono: usuario.telefono,
         direccion: usuario.direccion,
-        rol: usuario.rol
+        rol_id: parseInt(usuario.rol_id) // Asegurarse de que rol_id sea un número
       };
 
       // Si se ha ingresado una nueva contraseña, incluirla en la actualización
@@ -73,67 +80,90 @@ const EditarUsuario = () => {
       <div className={styles.mainContent}>
         <Header />
         <div className="container mt-5">
-          <h2 className={styles.title}>Editar Usuario</h2>
+          <h2 className={styles.title}>
+            <FontAwesomeIcon icon={faEdit} className={styles.titleIcon} />Editar Usuario
+          </h2>
           <form onSubmit={handleSubmit} className={styles.formContainer}>
             <div className="form-group">
-              <label>Nombre del Usuario</label>
+              <label className={styles.boldLabel}>
+                <FontAwesomeIcon icon={faUser} className={styles.icon} /> Nombre del Usuario
+              </label>
               <input
                 type="text"
                 className="form-control"
+                name="nombre"
                 value={usuario.nombre}
-                onChange={(e) => setUsuario({ ...usuario, nombre: e.target.value })}
+                onChange={handleChange}
                 required
               />
             </div>
             <div className="form-group mt-3">
-              <label>Email</label>
+              <label className={styles.boldLabel}>
+                <FontAwesomeIcon icon={faEnvelope} className={styles.icon} /> Email
+              </label>
               <input
                 type="email"
                 className="form-control"
+                name="email"
                 value={usuario.email}
-                onChange={(e) => setUsuario({ ...usuario, email: e.target.value })}
+                onChange={handleChange}
                 required
               />
             </div>
             <div className="form-group mt-3">
-              <label>Teléfono</label>
+              <label className={styles.boldLabel}>
+                <FontAwesomeIcon icon={faPhone} className={styles.icon} /> Teléfono
+              </label>
               <input
                 type="text"
                 className="form-control"
+                name="telefono"
                 value={usuario.telefono}
-                onChange={(e) => setUsuario({ ...usuario, telefono: e.target.value })}
+                onChange={handleChange}
               />
             </div>
             <div className="form-group mt-3">
-              <label>Dirección</label>
+              <label className={styles.boldLabel}>
+                <FontAwesomeIcon icon={faMapMarkedAlt} className={styles.icon} /> Dirección
+              </label>
               <textarea
                 className="form-control"
+                name="direccion"
                 value={usuario.direccion}
-                onChange={(e) => setUsuario({ ...usuario, direccion: e.target.value })}
+                onChange={handleChange}
               />
             </div>
             <div className="form-group mt-3">
-              <label>Rol</label>
+              <label className={styles.boldLabel}>
+                <FontAwesomeIcon icon={faUserTag} className={styles.icon} /> Rol
+              </label>
               <select
                 className="form-control"
-                value={usuario.rol}
-                onChange={(e) => setUsuario({ ...usuario, rol: e.target.value })}
+                name="rol_id"
+                value={usuario.rol_id} // Cambiado a rol_id
+                onChange={handleChange} // Cambiado a rol_id
               >
-                <option value="admin">admin</option>
-                <option value="empleado">empleado</option>
+                <option value="">Seleccione un rol</option>
+                <option value="1">Admin</option> {/* Cambiado a valores numéricos */}
+                <option value="2">Empleado</option> {/* Cambiado a valores numéricos */}
               </select>
             </div>
             <div className="form-group mt-3">
-              <label>Contraseña</label>
+              <label className={styles.boldLabel}>
+                <FontAwesomeIcon icon={faLock} className={styles.icon} /> Contraseña
+              </label>
               <input
                 type="password"
                 className="form-control"
+                name="contraseña"
                 value={usuario.contraseña}
-                onChange={(e) => setUsuario({ ...usuario, contraseña: e.target.value })}
+                onChange={handleChange}
                 placeholder="Ingrese nueva contraseña (opcional)"
               />
             </div>
-            <button type="submit" className="btn btn-primary mt-4">Actualizar Usuario</button>
+            <button type="submit" className={`${styles.btnPrimary} btn mt-4`}>
+              Actualizar Usuario
+            </button>
           </form>
         </div>
         <Footer />
@@ -143,4 +173,3 @@ const EditarUsuario = () => {
 };
 
 export default EditarUsuario;
-

@@ -1,131 +1,206 @@
-import React, { useState, useEffect } from 'react'; // Importamos React y los hooks useState y useEffect
-import axios from 'axios'; // Importamos axios para realizar peticiones HTTP
-import 'bootstrap/dist/css/bootstrap.min.css'; // Importamos el CSS de Bootstrap para los estilos
-import Sidebar from '../../components/Sidebar'; // Importamos el componente Sidebar
-import Header from '../../layouts/Header'; // Importamos el componente Header
-import Footer from '../../layouts/Footer'; // Importamos el componente Footer
-import styles from './styles/consultar-clientes.module.css'; // Importamos los estilos personalizados
-import Link from 'next/link'; // Importamos Link de Next.js para enlaces
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Sidebar from '../../components/Sidebar';
+import Header from '../../layouts/Header';
+import Footer from '../../layouts/Footer';
+import styles from './styles/consultar-clientes.module.css';
+import Link from 'next/link';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch, faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
-// Componente principal de la página ConsultarClientes
+const MySwal = withReactContent(Swal);
+
 const ConsultarClientes = () => {
-  // Declaramos los estados necesarios para manejar los clientes, la búsqueda, la paginación y el total de clientes
-  const [clientes, setClientes] = useState([]); // Estado para almacenar los clientes obtenidos
-  const [searchTerm, setSearchTerm] = useState(''); // Estado para el término de búsqueda
-  const [page, setPage] = useState(1); // Estado para la página actual (paginación)
-  const [limit, setLimit] = useState(10); // Estado para el límite de clientes por página
-  const [totalClientes, setTotalClientes] = useState(0); // Estado para el total de clientes disponibles
+  const [clientes, setClientes] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalClientes, setTotalClientes] = useState(0);
 
-  // useEffect para obtener los clientes de la API cada vez que cambian 'page' o 'limit'
   useEffect(() => {
     const fetchClientes = async () => {
       try {
-        // Realizamos una solicitud GET para obtener los clientes según la página y límite actuales
         const response = await axios.get(`http://localhost:8000/clientes?page=${page}&limit=${limit}`);
-        // Actualizamos el estado con los clientes y el total de clientes
         setClientes(response.data.clientes);
         setTotalClientes(response.data.total);
       } catch (error) {
-        console.error('Error al cargar los clientes:', error); // Mostramos un error si la solicitud falla
+        console.error('Error al cargar los clientes:', error);
       }
     };
-    fetchClientes(); // Llamamos a la función para obtener los clientes
-  }, [page, limit]); // El useEffect se ejecutará cada vez que cambien 'page' o 'limit'
+    fetchClientes();
+  }, [page, limit]);
 
-  // Filtramos los clientes según el término de búsqueda ingresado
   const filteredClientes = clientes
     ? clientes.filter(cliente =>
-        cliente.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+        cliente.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        cliente.numero_documento.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : [];
 
-  // Función para manejar la eliminación de un cliente
-  const handleDelete = async (cliente_id) => {
-    // Confirmación antes de eliminar un cliente
-    const confirmDelete = window.confirm('¿Estás seguro de que deseas eliminar este cliente?');
-    if (confirmDelete) {
+  const handleEditClient = async (cliente_id) => {
+    const result = await MySwal.fire({
+      title: '¿Estás seguro?',
+      text: '¿Deseas editar este cliente?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, editar',
+      cancelButtonText: 'Cancelar',
+      customClass: {
+        popup: 'my-popup-class',
+        title: 'my-title-class',
+        icon: 'my-icon-class',
+        confirmButton: 'my-confirm-button-class',
+        cancelButton: 'my-cancel-button-class'
+      }
+    });
+
+    if (result.isConfirmed) {
+      window.location.href = `/clientes/${cliente_id}`;
+    }
+  };
+
+  const handleDeleteClient = async (cliente_id) => {
+    const result = await MySwal.fire({
+      title: '¿Estás seguro?',
+      text: '¿Deseas eliminar este cliente?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      customClass: {
+        popup: 'my-popup-class',
+        title: 'my-title-class',
+        icon: 'my-icon-class',
+        confirmButton: 'my-confirm-button-class',
+        cancelButton: 'my-cancel-button-class'
+      }
+    });
+
+    if (result.isConfirmed) {
       try {
-        // Realizamos una solicitud DELETE para eliminar al cliente
         await axios.delete(`http://localhost:8000/clientes/${cliente_id}`);
-        // Actualizamos la lista de clientes después de eliminar uno
-        setClientes(clientes.filter(cliente => cliente.cliente_id !== cliente_id));
-        alert('Cliente eliminado exitosamente'); // Mensaje de éxito
+        setClientes(clientes.filter((cliente) => cliente.cliente_id !== cliente_id));
+        MySwal.fire({
+          title: 'Eliminado',
+          text: 'El cliente ha sido eliminado correctamente.',
+          icon: 'success',
+          confirmButtonColor: '#3085d6',
+          customClass: {
+            popup: 'my-popup-class',
+            title: 'my-title-class',
+            icon: 'my-icon-class',
+            confirmButton: 'my-confirm-button-class'
+          }
+        });
       } catch (error) {
-        console.error('Error al eliminar el cliente:', error); // Manejamos el error si la eliminación falla
-        alert('Hubo un error al eliminar el cliente');
+        console.error('Error al eliminar el cliente:', error);
+        MySwal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Hubo un error al eliminar el cliente.',
+          confirmButtonColor: '#d33',
+          customClass: {
+            popup: 'my-popup-class',
+            title: 'my-title-class',
+            icon: 'my-icon-class',
+            confirmButton: 'my-confirm-button-class'
+          }
+        });
       }
     }
   };
 
-  // Calculamos el número total de páginas para la paginación
   const totalPages = Math.ceil(totalClientes / limit);
 
-  // Función para ir a la siguiente página
   const handleNextPage = () => {
     if (page < totalPages) {
-      setPage(page + 1); // Aumentamos el número de página si no estamos en la última página
+      setPage(page + 1);
     }
   };
 
-  // Función para ir a la página anterior
   const handlePreviousPage = () => {
     if (page > 1) {
-      setPage(page - 1); // Reducimos el número de página si no estamos en la primera
+      setPage(page - 1);
     }
   };
 
-  // Estructura del componente que se renderiza en el navegador
   return (
-    <div className={styles.container}> {/* Contenedor principal con estilos personalizados */}
-      <Sidebar /> {/* Componente de barra lateral */}
-      <div className={styles.mainContent}> {/* Contenedor principal del contenido */}
-        <Header /> {/* Componente de encabezado */}
-        <div className="container mt-5"> {/* Contenedor de Bootstrap con márgenes */}
-          <h2 className={styles.title}>Consultar Clientes</h2> {/* Título de la página */}
-          <input
-            type="text"
-            className="form-control mb-4"
-            placeholder="Buscar cliente por nombre..."
-            value={searchTerm} // Valor del término de búsqueda
-            onChange={(e) => setSearchTerm(e.target.value)} // Actualiza el término de búsqueda al escribir
-          />
+    <div className={styles.container}>
+      <Sidebar />
+      <div className={styles.mainContent}>
+        <Header />
+        <div className="container mt-5">
+          <h2 className={`${styles.title} text-center`}>Consultar Clientes</h2>
 
-          {/* Tabla para mostrar los clientes */}
-          <table className="table table-striped">
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Email</th>
-                <th>Teléfono</th>
-                <th>Dirección</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredClientes.map((cliente) => (
-                <tr key={cliente.cliente_id}>
-                  <td>{cliente.nombre}</td>
-                  <td>{cliente.email}</td>
-                  <td>{cliente.telefono}</td>
-                  <td>{cliente.direccion}</td>
-                  <td>
-                    <button className="btn btn-warning btn-sm">
-                      <Link href={`/clientes/${cliente.cliente_id}`}>Editar</Link> {/* Enlace para editar el cliente */}
-                    </button>
-                    <button
-                      className="btn btn-danger btn-sm ml-2"
-                      onClick={() => handleDelete(cliente.cliente_id)} // Llamada a la función de eliminación
-                    >
-                      Eliminar
-                    </button>
-                  </td>
+          {/* Barra de búsqueda */}
+          <div className={`${styles.searchContainer} d-flex justify-content-center`}>
+            <div className="input-group mb-4" style={{ maxWidth: '600px' }}>
+              <span className="input-group-text bg-primary text-white">
+                <FontAwesomeIcon icon={faSearch} />
+              </span>
+              <input
+                type="text"
+                className={`form-control ${styles.searchInput}`}
+                placeholder="Buscar cliente por nombre o número de documento..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className={styles.tableContainer}>
+            <table className={`${styles.table} table`}>
+              <thead>
+                <tr>
+                  <th className="text-center">Nombre</th>
+                  <th className="text-center">Email</th>
+                  <th className="text-center">Teléfono</th>
+                  <th className="text-center">Dirección</th>
+                  <th className="text-center">Documento</th>
+                  <th className="text-center">Acciones</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredClientes.map((cliente) => (
+                  <tr key={cliente.cliente_id}>
+                    <td className="text-center">{cliente.nombre}</td>
+                    <td className="text-center">{cliente.email}</td>
+                    <td className="text-center">{cliente.telefono}</td>
+                    <td className={`${styles.direccion} text-center`}>{cliente.direccion}</td>
+                    <td className="text-center">
+                      {cliente.tipo_documento} - {cliente.numero_documento}
+                    </td>
+                    <td className="text-center">
+                      <div className="d-flex justify-content-center gap-2">
+                        <button
+                          className="btn btn-warning btn-sm"
+                          onClick={() => handleEditClient(cliente.cliente_id)}
+                        >
+                          <FontAwesomeIcon icon={faEdit} className="me-1" /> Editar
+                        </button>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => handleDeleteClient(cliente.cliente_id)}
+                        >
+                          <FontAwesomeIcon icon={faTrashAlt} className="me-1" /> Eliminar
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-          {/* Paginación para navegar entre páginas */}
-          <nav>
+          {/* Paginación */}
+          <nav className={styles.paginationNav}>
             <ul className="pagination justify-content-center">
               <li className={`page-item ${page === 1 ? 'disabled' : ''}`}>
                 <button className="page-link" onClick={handlePreviousPage}>Anterior</button>
@@ -141,11 +216,10 @@ const ConsultarClientes = () => {
             </ul>
           </nav>
         </div>
-        <Footer /> {/* Componente de pie de página */}
+        <Footer />
       </div>
     </div>
   );
 };
 
-export default ConsultarClientes; // Exportamos el componente para su uso en otras partes de la aplicación
-
+export default ConsultarClientes;

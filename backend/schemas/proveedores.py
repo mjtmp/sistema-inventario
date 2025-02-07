@@ -1,27 +1,25 @@
 from pydantic import BaseModel
 from typing import Optional, List
-from .productos import Producto  # Importa el esquema relacionado con productos
+from .productos import Producto
 
-# Clase base para proveedores
 class ProveedorBase(BaseModel):
-    nombre: str  # Nombre del proveedor
-    email: Optional[str] = None  # Email del proveedor (opcional)
-    telefono: Optional[str] = None  # Teléfono del proveedor (opcional)
-    direccion: Optional[str] = None  # Dirección del proveedor (opcional)
+    nombre: str
+    email: Optional[str] = None
+    telefono: Optional[str] = None
+    direccion: Optional[str] = None
+    rif: Optional[str] = None  # Nuevo campo para el RIF
 
-# Esquema para crear proveedores (hereda de la base)
 class ProveedorCreate(ProveedorBase):
-    pass
+    usuario_id: int  # Asegurar que usuario_id está incluido
 
-# Esquema para actualizar proveedores (hereda de la base)
 class ProveedorUpdate(ProveedorBase):
-    pass
+    usuario_id: int  # Incluir usuario_id
 
-# Esquema para representar proveedores (incluye ID y productos relacionados)
 class Proveedor(ProveedorBase):
-    proveedor_id: int  # ID único del proveedor
-    productos: List[Producto] = []  # Lista de productos asociados con el proveedor
+    proveedor_id: int
+    productos: List[Producto] = []
+    fecha_creacion: Optional[str] = None  # Cambiar tipo a str
+    fecha_actualizacion: Optional[str] = None  # Cambiar tipo a str
 
     class Config:
-        from_attributes = True  # Permite que Pydantic utilice atributos del modelo SQLAlchemy
-
+        from_attributes = True

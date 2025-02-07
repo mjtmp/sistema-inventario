@@ -1,46 +1,68 @@
 .container {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .mainContent {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1; /* Hace que este contenedor crezca y ocupe el espacio restante */
-    padding-left: 250px; /* Ajusta según el ancho del Sidebar */
-  }
-  
-  .title {
-    text-align: center;
-    font-size: 1.8rem;
-    color: #333;
-    margin-bottom: 1.5rem;
-  }
-  
-  .formContainer {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 2rem;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px; /* Espacio para evitar que el formulario pegue el footer */
-  }
-  
-  .form-group label {
-    font-weight: 600;
-    color: #555;
-  }
-  
-  .btn-primary {
-    width: 100%;
-    background-color: #007bff;
-    border: none;
-    transition: background-color 0.2s ease;
-  }
-  
-  .btn-primary:hover {
-    background-color: #0056b3;
-  }
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(to bottom, #e9efff 20%, #b3c8f1 80%);
+}
+
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Hace que este contenedor crezca y ocupe el espacio restante */
+  padding-left: 250px; /* Ajusta según el ancho del Sidebar */
+}
+
+.title {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #2a4d8f;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.titleIcon {
+  margin-right: 10px;
+  color: #001838;
+}
+
+.formContainer {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px; /* Espacio para evitar que el formulario pegue el footer */
+}
+
+.boldLabel {
+  font-weight: 700;
+  color: #444;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon {
+  color: #001838;
+}
+
+.btnPrimary {
+  width: 100%;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.btnPrimary:hover {
+  background-color: #0056b3;
+}
+

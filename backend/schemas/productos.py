@@ -1,27 +1,48 @@
-from pydantic import BaseModel  # Base para crear esquemas de validación.
-from typing import Optional  # Para campos opcionales.
+from pydantic import BaseModel
+from typing import Optional
+from schemas.categorias import Categoria
 
-# Esquema base para productos, define los campos comunes.
 class ProductoBase(BaseModel):
-    nombre: str  # Nombre del producto.
-    descripcion: str  # Descripción del producto.
-    precio: float  # Precio del producto.
-    tiene_iva: bool  # Indica si el producto incluye IVA.
-    stock: int  # Cantidad en inventario.
-    proveedor_id: int  # ID del proveedor asociado (clave foránea).
-    codigo_barras: Optional[str] = None  # Código de barras opcional.
+    nombre: str
+    descripcion: str
+    precio: float
+    tiene_iva: bool
+    stock: int
+    codigo: str
+    proveedor_id: int
+    codigo_barras: Optional[str] = None
+    categoria_id: int  # Relación con categoría
+    ubicacion: Optional[str] = None  # Nuevo campo
+    cantidad_minima: Optional[int] = None  # Nuevo campo
+    cantidad_maxima: Optional[int] = None  # Nuevo campo
 
-# Esquema para crear productos, hereda del esquema base.
 class ProductoCreate(ProductoBase):
-    pass
+    usuario_id: int  # Asegurar que usuario_id está incluido
 
-# Esquema para actualizar productos, hereda del esquema base.
 class ProductoUpdate(ProductoBase):
-    pass
+    usuario_id: int  # Incluir usuario_id
 
-# Esquema para devolver productos, incluye el ID del producto.
 class Producto(ProductoBase):
-    producto_id: int  # ID único del producto.
+    producto_id: int
+    categoria: Optional[Categoria] = None  # Información completa de la categoría
+    fecha_creacion: Optional[str] = None  # Cambiar tipo a str
+    fecha_actualizacion: Optional[str] = None  # Cambiar tipo a str
+
+class ProductoResponse(BaseModel):
+    producto_id: int
+    nombre: str
+    descripcion: Optional[str] = None
+    precio: float
+    tiene_iva: bool
+    stock: int
+    proveedor_id: Optional[int] = None
+    codigo_barras: Optional[str] = None
+    categoria_id: Optional[int] = None
+    fecha_creacion: Optional[str] = None
+    fecha_actualizacion: Optional[str] = None
+    ubicacion: Optional[str] = None  # Nuevo campo
+    cantidad_minima: Optional[int] = None  # Nuevo campo
+    cantidad_maxima: Optional[int] = None  # Nuevo campo
 
     class Config:
-        from_attributes = True  # Permite convertir modelos SQLAlchemy a Pydantic.
+        from_attributes = True
